@@ -1,6 +1,18 @@
-import Head from 'next/head'
+import { useEffect } from "react";
+import Head from "next/head";
+import io from "socket.io-client";
 
 export default function Home() {
+  useEffect(() => {
+    const socket = io();
+    socket.connect();
+
+    return () => {
+      socket.removeAllListeners();
+      socket.close();
+    };
+  }, []);
+
   return (
     <div className="container">
       <Head>
@@ -54,7 +66,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
         </a>
       </footer>
@@ -205,5 +217,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
