@@ -1,17 +1,29 @@
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import Head from "next/head";
 import io from "socket.io-client";
 
-export default function Home() {
+function useSocketIo() {
+  const { current: socket } = useRef(io());
+
   useEffect(() => {
-    const socket = io();
     socket.connect();
+    socket.on("message", console.log);
 
     return () => {
       socket.removeAllListeners();
       socket.close();
     };
-  }, []);
+  }, [socket]);
+
+  return [socket];
+}
+
+export default function Home() {
+  const [socket] = useSocketIo();
+
+  function handleChange({ currentTarget: { value } }) {
+    socket.emit("message", value);
+  }
 
   return (
     <div className="container">
@@ -28,6 +40,8 @@ export default function Home() {
         <p className="description">
           Get started by editing <code>pages/index.js</code>
         </p>
+
+        <input onChange={handleChange} />
 
         <div className="grid">
           <a href="https://nextjs.org/docs" className="card">

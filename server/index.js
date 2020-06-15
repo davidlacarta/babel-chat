@@ -9,8 +9,12 @@ app.prepare().then(() => {
   const server = http.createServer((req, res) => handle(req, res));
   const io = require("socket.io")(server);
 
-  io.on("connection", () => {
+  io.on("connection", (socket) => {
     console.log("user connected");
+
+    socket.on("message", (message) => {
+      socket.broadcast.emit("message", message);
+    });
   });
 
   server.listen(3000, (err) => {
