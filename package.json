@@ -8,6 +8,7 @@
     "start": "NODE_ENV=production node server"
   },
   "dependencies": {
+    "@google-cloud/translate": "^6.0.0",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",

@@ -42,9 +42,10 @@ function Chat() {
           />
         </div>
         <ul>
-          {messages.map(({ message }, index) => (
+          {messages.map(({ message, translation }, index) => (
             <li key={index}>
               <span>{message}</span>
+              {translation && <span>{translation}</span>}
             </li>
           ))}
         </ul>
@@ -92,11 +93,16 @@ function Chat() {
           margin: 0.5rem 0;
         }
 
-        span {
+        span:first-of-type {
           display: block;
           border: 1px solid lightgray;
           border-radius: 10px;
           padding: 1rem;
+        }
+
+        span:nth-of-type(2) {
+          margin: 1rem;
+          color: darkgray;
         }
       `}</style>
     </>
