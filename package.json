@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "node server",
     "build": "next build",
-    "start": "NODE_ENV=production node server",
-    "postinstall": "npm run build"
+    "start": "NODE_ENV=production node server"
   },
   "dependencies": {
     "@google-cloud/translate": "^6.0.0",
