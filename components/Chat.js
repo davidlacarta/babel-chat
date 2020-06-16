@@ -18,9 +18,9 @@ function Chat() {
     }
 
     clearInput();
-    addToChat(message);
+    addToChat({ message });
 
-    socket.emit("message", message);
+    socket.emit("message", { message });
   }
 
   function addToChat(message) {
@@ -42,7 +42,7 @@ function Chat() {
           />
         </div>
         <ul>
-          {messages.map((message, index) => (
+          {messages.map(({ message }, index) => (
             <li key={index}>
               <span>{message}</span>
             </li>
