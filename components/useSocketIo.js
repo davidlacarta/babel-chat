@@ -1,8 +1,8 @@
 import { useRef, useEffect } from "react";
 import io from "socket.io-client";
 
-export default function useSocketIo(...args) {
-  const { current: socket } = useRef(io(...args));
+export default function useSocketIo() {
+  const { current: socket } = useRef(io());
 
   useEffect(() => {
     socket.connect();

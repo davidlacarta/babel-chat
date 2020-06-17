@@ -16,8 +16,16 @@ app.prepare().then(() => {
   const server = http.createServer((req, res) => handle(req, res));
   const io = require("socket.io")(server);
 
+  let rooms = new Set();
+
   io.on("connection", (socket) => {
-    socket.on("message", async (message) => {
+    socket.on("join", (room) => {
+      [...rooms].forEach((room) => socket.leave(room));
+      socket.join(room);
+      rooms.add(room);
+    });
+
+    socket.on("send", async (message) => {
       message.translation = {
         es: await translate({
           googleCloudTranslate,
@@ -31,8 +39,7 @@ app.prepare().then(() => {
         }),
       };
 
-      socket.emit("message", message);
-      socket.broadcast.emit("message", message);
+      io.in(message.room).emit("send", message);
     });
   });
 

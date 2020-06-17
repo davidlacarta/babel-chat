@@ -13,7 +13,7 @@ const langs = {
   },
 };
 
-function Chat() {
+function Chat({ room }) {
   const [socket] = useSocketIo();
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState();
@@ -22,7 +22,11 @@ function Chat() {
   const messageRef = useRef();
 
   useEffect(() => {
-    socket.on("message", (message) => setMessages([...messages, message]));
+    socket.emit("join", room || "general");
+  }, [socket, room]);
+
+  useEffect(() => {
+    socket.on("send", (message) => setMessages([...messages, message]));
   }, [socket, messages]);
 
   function handleKeyDown({ key, currentTarget: { value: text } }) {
@@ -35,9 +39,10 @@ function Chat() {
     if (!username) {
       setUsername(text);
     } else {
-      socket.emit("message", {
+      socket.emit("send", {
         message: text,
         username: username,
+        room: room || "general",
       });
     }
   }
@@ -67,7 +72,7 @@ function Chat() {
               {lang.flag}
             </div>
           </div>
-          <div className="title">Babel chat</div>
+          <div className="title">Babel chat {room && `[${room}]`}</div>
         </div>
         <ul className="messages">
           {messages.map(
