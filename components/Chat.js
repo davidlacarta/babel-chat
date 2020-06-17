@@ -5,6 +5,7 @@ import useSocketIo from "./useSocketIo";
 function Chat() {
   const [socket] = useSocketIo();
   const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState();
 
   const messageRef = useRef();
 
@@ -12,15 +13,29 @@ function Chat() {
     socket.on("message", (message) => addToChat(message));
   }, [socket, messages]);
 
-  function handleKeyDown({ key, currentTarget: { value: message } }) {
-    if (key !== "Enter" || !message) {
+  function handleKeyDown({ key, currentTarget: { value: text } }) {
+    if (key !== "Enter" || !text) {
       return;
     }
 
     clearInput();
-    addToChat({ message });
 
-    socket.emit("message", { message });
+    username ? newMessage(text) : setUsername(text);
+  }
+
+  function handleClickAvatar() {
+    setUsername(undefined);
+  }
+
+  function newMessage(text) {
+    const message = {
+      message: text,
+      username: username,
+    };
+
+    addToChat(message);
+
+    socket.emit("message", message);
   }
 
   function addToChat(message) {
@@ -43,29 +58,41 @@ function Chat() {
           <div className="title">Babel chat</div>
         </div>
         <ul className="messages">
-          {messages.map(({ message, translation }, index) => (
-            <li
-              key={index}
-              className={`message appeared ${translation ? "left" : "right"}`}
-            >
-              <div className="avatar"></div>
-              <div className="text_wrapper">
-                <div className="text">
-                  {message}
-                  <small>{translation}</small>
+          {messages.map(
+            ({ message, username: messageUsername, translation }, index) => (
+              <li
+                key={index}
+                className={`message appeared ${
+                  messageUsername === username ? "right" : "left"
+                }`}
+              >
+                <div className="avatar">{messageUsername.slice(0, 3)}</div>
+                <div className="text_wrapper">
+                  <div className="text">
+                    {message}
+                    <small>{translation}</small>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            )
+          )}
         </ul>
         <div className="bottom_wrapper clearfix">
           <div className="message_input_wrapper">
             <input
-              placeholder="Type your message here..."
+              placeholder={`Type your ${
+                username ? "message" : "username"
+              } here...`}
               className="message_input"
               ref={messageRef}
               onKeyDown={handleKeyDown}
             />
+          </div>
+          <div
+            className={`avatar ${username && "username"}`}
+            onClick={handleClickAvatar}
+          >
+            {username && username.slice(0, 3)}
           </div>
         </div>
       </div>
@@ -84,7 +111,6 @@ function Chat() {
           background-color: #f8f8f8;
           overflow: hidden;
         }
-
         .top_menu {
           background-color: #fff;
           width: 100%;
@@ -117,7 +143,6 @@ function Chat() {
           color: #bcbdc0;
           font-size: 20px;
         }
-
         .messages {
           position: relative;
           list-style: none;
@@ -173,7 +198,12 @@ function Chat() {
           width: 60px;
           height: 60px;
           border-radius: 50%;
-          display: inline-block;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-transform: uppercase;
+          color: white;
+          font-weight: 900;
         }
         .messages .message .text_wrapper {
           display: inline-block;
@@ -205,12 +235,10 @@ function Chat() {
           font-size: 18px;
           font-weight: 300;
         }
-
         .messages .message .text_wrapper .text small {
           display: block;
           color: gray;
         }
-
         .bottom_wrapper {
           position: relative;
           width: 100%;
@@ -221,10 +249,10 @@ function Chat() {
         }
         .bottom_wrapper .message_input_wrapper {
           display: inline-block;
-          height: 50px;
+          height: 60px;
           border-radius: 25px;
           border: 1px solid #bcbdc0;
-          width: 100%;
+          width: calc(100% - 80px);
           position: relative;
           padding: 0 20px;
         }
@@ -236,6 +264,37 @@ function Chat() {
           position: absolute;
           outline-width: 0;
           color: gray;
+        }
+        .bottom_wrapper .avatar {
+          background-color: #fdbf68;
+          float: right;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-transform: uppercase;
+          color: white;
+          font-weight: 900;
+        }
+        .bottom_wrapper .avatar.username {
+          cursor: pointer;
+        }
+        .bottom_wrapper .username.avatar:hover:after {
+          content: "🗑️";
+          cursor: pointer;
+          position: absolute;
+          background-color: #fdbf68;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-transform: uppercase;
+          color: white;
+          font-weight: 900;
         }
       `}</style>
     </>
