@@ -18,12 +18,20 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     socket.on("message", async (message) => {
-      message.translation = await translate({
-        googleCloudTranslate,
-        message: message.message,
-        lang: "es",
-      });
+      message.translation = {
+        es: await translate({
+          googleCloudTranslate,
+          message: message.message,
+          lang: "es",
+        }),
+        en: await translate({
+          googleCloudTranslate,
+          message: message.message,
+          lang: "en",
+        }),
+      };
 
+      socket.emit("message", message);
       socket.broadcast.emit("message", message);
     });
   });

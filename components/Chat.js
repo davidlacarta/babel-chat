@@ -2,15 +2,27 @@ import { useRef, useEffect, useState } from "react";
 
 import useSocketIo from "./useSocketIo";
 
+const langs = {
+  spain: {
+    flag: "🇪🇸",
+    code: "es",
+  },
+  england: {
+    flag: "🇬🇧",
+    code: "en",
+  },
+};
+
 function Chat() {
   const [socket] = useSocketIo();
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState();
+  const [lang, setLang] = useState(langs.spain);
 
   const messageRef = useRef();
 
   useEffect(() => {
-    socket.on("message", (message) => addToChat(message));
+    socket.on("message", (message) => setMessages([...messages, message]));
   }, [socket, messages]);
 
   function handleKeyDown({ key, currentTarget: { value: text } }) {
@@ -20,26 +32,26 @@ function Chat() {
 
     clearInput();
 
-    username ? newMessage(text) : setUsername(text);
+    if (!username) {
+      setUsername(text);
+    } else {
+      socket.emit("message", {
+        message: text,
+        username: username,
+      });
+    }
+  }
+
+  function handleClickFlag() {
+    if (lang.code === langs.spain.code) {
+      setLang(langs.england);
+    } else {
+      setLang(langs.spain);
+    }
   }
 
   function handleClickAvatar() {
     setUsername(undefined);
-  }
-
-  function newMessage(text) {
-    const message = {
-      message: text,
-      username: username,
-    };
-
-    addToChat(message);
-
-    socket.emit("message", message);
-  }
-
-  function addToChat(message) {
-    setMessages([...messages, message]);
   }
 
   function clearInput() {
@@ -51,9 +63,9 @@ function Chat() {
       <div className="chat_window">
         <div className="top_menu">
           <div className="buttons">
-            <div className="button close"></div>
-            <div className="button minimize"></div>
-            <div className="button maximize"></div>
+            <div className="button" onClick={handleClickFlag}>
+              {lang.flag}
+            </div>
           </div>
           <div className="title">Babel chat</div>
         </div>
@@ -70,7 +82,7 @@ function Chat() {
                 <div className="text_wrapper">
                   <div className="text">
                     {message}
-                    <small>{translation}</small>
+                    <small>{translation[lang.code]}</small>
                   </div>
                 </div>
               </li>
@@ -122,21 +134,7 @@ function Chat() {
           position: absolute;
         }
         .top_menu .buttons .button {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          display: inline-block;
-          margin-right: 10px;
-          position: relative;
-        }
-        .top_menu .buttons .button.close {
-          background-color: #f5886e;
-        }
-        .top_menu .buttons .button.minimize {
-          background-color: #fdbf68;
-        }
-        .top_menu .buttons .button.maximize {
-          background-color: #a3d063;
+          cursor: pointer;
         }
         .top_menu .title {
           text-align: center;
