@@ -4,12 +4,21 @@ const langs = {
   spain: {
     flag: "🇪🇸",
     code: "es",
+    username: "Escribe tu nick aquí...",
+    message: "Escribe un mensaje aquí...",
+    send: "Enviar",
   },
   england: {
     flag: "🇬🇧",
     code: "en",
+    username: "Type your username here...",
+    message: "Type a message here...",
+    send: "Send",
   },
 };
+
+const MAX_MESSAGES = 100;
+const MAX_MESSAGES_MARGIN = 10;
 
 function Chat({ room, socket }) {
   const [messages, setMessages] = useState([]);
@@ -17,6 +26,11 @@ function Chat({ room, socket }) {
   const [lang, setLang] = useState(langs.spain);
 
   const messageRef = useRef();
+  const messagesRef = useRef();
+
+  useEffect(() => {
+    messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+  }, [messages]);
 
   useEffect(() => {
     socket.emit("join", room || "general");
@@ -24,7 +38,17 @@ function Chat({ room, socket }) {
 
   useEffect(() => {
     socket.on("send", (message) => {
-      setMessages((messages) => [...messages, message]);
+      setMessages((messages) => {
+        if (messages.length + 1 > MAX_MESSAGES + MAX_MESSAGES_MARGIN) {
+          setTimeout(() => {
+            setMessages((messages) =>
+              messages.slice(messages.length - MAX_MESSAGES)
+            );
+          }, 1000);
+        }
+
+        return [...messages, message];
+      });
     });
   }, [socket]);
 
@@ -69,14 +93,17 @@ function Chat({ room, socket }) {
     <>
       <div className="chat_window">
         <div className="top_menu">
-          <div className="buttons">
-            <div className="button" onClick={handleClickFlag}>
-              {lang.flag}
-            </div>
+          <div className={`username ${username && "fill"}`}>
+            {username && username.slice(0, 3)}
           </div>
-          <div className="title">Babel {room && `[${room}]`}</div>
+          <div className={`title ${room && "room"}`}>
+            {(room && `🔒 ${room}`) || `Babel`}
+          </div>
+          <div className="button" onClick={handleClickFlag}>
+            {lang.flag}
+          </div>
         </div>
-        <ul className="messages">
+        <ul ref={messagesRef} className="messages">
           {messages.map(
             ({ message, username: messageUsername, translation }, index) => (
               <li
@@ -99,57 +126,82 @@ function Chat({ room, socket }) {
         <div className={`bottom_wrapper clearfix ${username && "username"}`}>
           <div className="message_input_wrapper">
             <input
-              placeholder={username ? "Message" : "Username"}
+              placeholder={username ? lang.message : lang.username}
               className="message_input"
               ref={messageRef}
               onKeyDown={handleKeyDown}
             />
           </div>
           <div className="avatar" onClick={handleClickAvatar}>
-            {"🦄"}
+            {lang.send}
           </div>
         </div>
       </div>
       <style jsx>{`
         .chat_window {
           position: absolute;
-          width: calc(100% - 20px);
+          width: 100%;
           max-width: 800px;
-          height: calc(100% - 20px);
+          height: 100%;
           border-radius: 10px;
           background-color: #fff;
           left: 50%;
           top: 50%;
           transform: translateX(-50%) translateY(-50%);
-          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
           background-color: #f8f8f8;
           overflow: hidden;
         }
         .top_menu {
           background-color: #fff;
           width: 100%;
-          padding: 20px 0 15px;
-          box-shadow: 0 1px 30px rgba(0, 0, 0, 0.1);
+          display: flex;
+          padding: 1rem;
+          justify-content: space-between;
         }
-        .top_menu .buttons {
-          margin: 3px 0 0 20px;
-          position: absolute;
+        .top_menu .username {
+          color: #fdbf68;
+          text-transform: uppercase;
+          font-weight: bold;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 100%;
+          font-size: 0.8rem;
+          width: 40px;
+          height: 40px;
         }
-        .top_menu .buttons .button {
+        .top_menu .username.fill {
+          border: 1px solid #fdbf68;
+        }
+        .top_menu .button {
           cursor: pointer;
+          font-size: 1.3rem;
+          margin-right: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .top_menu .title {
-          text-align: center;
           color: #bcbdc0;
-          font-size: 20px;
+          font-size: 1.5rem;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          max-width: 70%;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+        .top_menu .title.room {
+          font-size: 0.8rem;
         }
         .messages {
           position: relative;
           list-style: none;
           padding: 20px 10px 0 10px;
           margin: 0;
-          height: calc(100% - 140px);
-          overflow: scroll;
+          height: calc(100% - 162px);
+          overflow-y: scroll;
+          scroll-behavior: smooth;
         }
         .messages .message {
           clear: both;
@@ -240,7 +292,6 @@ function Chat({ room, socket }) {
           color: gray;
         }
         .bottom_wrapper {
-          position: relative;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -253,14 +304,14 @@ function Chat({ room, socket }) {
           bottom: 0;
         }
         .bottom_wrapper:not(.username) {
-          top: 50px;
+          top: 72px;
         }
         .bottom_wrapper .message_input_wrapper {
           display: inline-block;
-          height: 60px;
+          height: 50px;
           border-radius: 25px;
           border: 1px solid #bcbdc0;
-          width: calc(100% - 70px);
+          width: calc(100% - 90px);
           position: relative;
           padding: 0 20px;
         }
@@ -275,17 +326,16 @@ function Chat({ room, socket }) {
         }
         .bottom_wrapper .avatar {
           cursor: pointer;
-          background-color: #c7eafc;
+          background-color: #a3d063;
           float: right;
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
+          width: 80px;
+          height: 50px;
+          border-radius: 25px;
           display: flex;
           align-items: center;
           justify-content: center;
-          text-transform: uppercase;
+          text-transform: capitalize;
           color: white;
-          font-weight: 900;
         }
       `}</style>
     </>
