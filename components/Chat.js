@@ -1,7 +1,5 @@
 import { useRef, useEffect, useState } from "react";
 
-import useSocketIo from "./useSocketIo";
-
 const langs = {
   spain: {
     flag: "🇪🇸",
@@ -13,8 +11,7 @@ const langs = {
   },
 };
 
-function Chat({ room }) {
-  const [socket] = useSocketIo();
+function Chat({ room, socket }) {
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState();
   const [lang, setLang] = useState(langs.spain);
