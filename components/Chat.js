@@ -23,8 +23,10 @@ function Chat({ room, socket }) {
   }, [socket, room]);
 
   useEffect(() => {
-    socket.on("send", (message) => setMessages([...messages, message]));
-  }, [socket, messages]);
+    socket.on("send", (message) => {
+      setMessages((messages) => [...messages, message]);
+    });
+  }, [socket]);
 
   function handleKeyDown({ key, currentTarget: { value: text } }) {
     if (key !== "Enter" || !text) {

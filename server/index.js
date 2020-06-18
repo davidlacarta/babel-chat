@@ -16,13 +16,10 @@ app.prepare().then(() => {
   const server = http.createServer((req, res) => handle(req, res));
   const io = require("socket.io")(server);
 
-  let rooms = new Set();
-
   io.on("connection", (socket) => {
     socket.on("join", (room) => {
-      [...rooms].forEach((room) => socket.leave(room));
+      Object.keys(socket.rooms).forEach((room) => socket.leave(room));
       socket.join(room);
-      rooms.add(room);
     });
 
     socket.on("send", async (message) => {
