@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, KeyboardEvent } from "react";
 
 import useSocket from "client/useSocket";
+import { Message, Event } from "shared/types";
 
 const langs = {
   spain: {
@@ -24,15 +25,6 @@ const MAX_MESSAGES_MARGIN = 10;
 
 export type Props = {
   room?: string;
-};
-
-export type Message = {
-  message?: string;
-  username?: string;
-  translation?: {
-    es: string;
-    en: string;
-  };
 };
 
 export type Lang = {
@@ -59,11 +51,11 @@ export default function Chat({ room }: Props) {
   }, [messages]);
 
   useEffect(() => {
-    socket?.emit("join", room || "general");
+    socket?.emit(Event.JOIN_ROOM, room || "general");
   }, [socket, room]);
 
   useEffect(() => {
-    socket?.on("send", (message: Message) => {
+    socket?.on(Event.SEND_MESSAGE_TRANSLATED, (message: Message) => {
       setMessages((messages) => {
         if (messages.length + 1 > MAX_MESSAGES + MAX_MESSAGES_MARGIN) {
           setTimeout(() => {
@@ -95,7 +87,7 @@ export default function Chat({ room }: Props) {
     if (!username) {
       setUsername(text);
     } else {
-      socket?.emit("send", {
+      socket?.emit(Event.SEND_MESSAGE, {
         message: text,
         username: username,
         room: room || "general",
