@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 
+import useSocket from "client/useSocket";
+
 const langs = {
   spain: {
     flag: "🇪🇸",
@@ -20,7 +22,8 @@ const langs = {
 const MAX_MESSAGES = 100;
 const MAX_MESSAGES_MARGIN = 10;
 
-function Chat({ room, socket }: { room?; socket }) {
+function Chat({ room }: { room? }) {
+  const socket = useSocket();
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState(null);
   const [lang, setLang] = useState(langs.spain);
@@ -33,11 +36,11 @@ function Chat({ room, socket }: { room?; socket }) {
   }, [messages]);
 
   useEffect(() => {
-    socket.emit("join", room || "general");
+    socket?.emit("join", room || "general");
   }, [socket, room]);
 
   useEffect(() => {
-    socket.on("send", (message) => {
+    socket?.on("send", (message) => {
       setMessages((messages) => {
         if (messages.length + 1 > MAX_MESSAGES + MAX_MESSAGES_MARGIN) {
           setTimeout(() => {
