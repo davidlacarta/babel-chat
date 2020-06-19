@@ -20,13 +20,13 @@ const langs = {
 const MAX_MESSAGES = 100;
 const MAX_MESSAGES_MARGIN = 10;
 
-function Chat({ room, socket }) {
+function Chat({ room, socket }: { room?; socket }) {
   const [messages, setMessages] = useState([]);
-  const [username, setUsername] = useState();
+  const [username, setUsername] = useState(null);
   const [lang, setLang] = useState(langs.spain);
 
-  const messageRef = useRef();
-  const messagesRef = useRef();
+  const messageRef = useRef<HTMLInputElement>(null);
+  const messagesRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
@@ -94,7 +94,7 @@ function Chat({ room, socket }) {
       <div className="chat_window">
         <div className="top_menu">
           <div className={`username ${username && "fill"}`}>
-            {username && username.slice(0, 3)}
+            {username?.slice(0, 3)}
           </div>
           <div className={`title ${room && "room"}`}>
             {(room && `🔒 ${room}`) || `Babel`}

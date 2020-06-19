@@ -1,4 +1,4 @@
-module.exports = async function translate({
+export default async function translate({
   googleCloudTranslate,
   message,
   lang,
@@ -10,4 +10,4 @@ module.exports = async function translate({
   } catch (error) {
     console.log(error);
   }
-};
+}

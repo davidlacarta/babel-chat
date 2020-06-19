@@ -1,7 +1,9 @@
-const http = require("http");
-const next = require("next");
+import http from "http";
+import next from "next";
+import GoogleCloudTranslate from "@google-cloud/translate";
+import SocketIO from "socket.io";
 
-const translate = require("./translate");
+import translate from "./translate";
 
 const dev = process.env.NODE_ENV !== "production";
 const port = process.env.PORT || 3000;
@@ -10,11 +12,11 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const projectId = process.env.GOOGLE_APPLICATION_PROJECT_ID;
-  const { Translate } = require("@google-cloud/translate").v2;
+  const { Translate } = GoogleCloudTranslate.v2;
   const googleCloudTranslate = new Translate({ projectId });
 
   const server = http.createServer((req, res) => handle(req, res));
-  const io = require("socket.io")(server);
+  const io = SocketIO(server);
 
   io.on("connection", (socket) => {
     socket.on("join", (room) => {
@@ -40,8 +42,11 @@ app.prepare().then(() => {
     });
   });
 
-  server.listen(port, (err) => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
-  });
+  server.listen(port);
+  // tslint:disable-next-line:no-console
+  console.log(
+    `> Server listening at http://localhost:${port} as ${
+      dev ? "development" : process.env.NODE_ENV
+    }`
+  );
 });

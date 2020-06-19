@@ -3,16 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node server",
-    "build": "next build",
-    "start": "NODE_ENV=production node server"
+    "dev": "nodemon",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "start": "cross-env NODE_ENV=production node dist/index.js"
   },
   "dependencies": {
     "@google-cloud/translate": "^6.0.0",
+    "cross-env": "^7.0.2",
     "next": "9.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.13",
+    "@types/react": "^16.9.38",
+    "@types/react-dom": "^16.9.8",
+    "@types/socket.io-client": "^1.4.33",
+    "nodemon": "^2.0.4",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
   }
 }
