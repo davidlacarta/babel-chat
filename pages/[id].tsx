@@ -10,7 +10,7 @@ function chat() {
 
   return (
     <Layout>
-      <Chat room={id} />
+      <Chat room={id as string} />
     </Layout>
   );
 }

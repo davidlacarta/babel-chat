@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, KeyboardEvent } from "react";
 
 import useSocket from "client/useSocket";
 
@@ -9,30 +9,53 @@ const langs = {
     username: "Escribe tu nick aquí...",
     message: "Escribe un mensaje aquí...",
     send: "Enviar",
-  },
+  } as Lang,
   england: {
     flag: "🇬🇧",
     code: "en",
     username: "Type your username here...",
     message: "Type a message here...",
     send: "Send",
-  },
+  } as Lang,
 };
 
 const MAX_MESSAGES = 100;
 const MAX_MESSAGES_MARGIN = 10;
 
-function Chat({ room }: { room? }) {
+export type Props = {
+  room?: string;
+};
+
+export type Message = {
+  message?: string;
+  username?: string;
+  translation?: {
+    es: string;
+    en: string;
+  };
+};
+
+export type Lang = {
+  flag: string;
+  code: "es" | "en";
+  username: string;
+  message: string;
+  send: string;
+};
+
+export default function Chat({ room }: Props) {
   const socket = useSocket();
-  const [messages, setMessages] = useState([]);
-  const [username, setUsername] = useState(null);
-  const [lang, setLang] = useState(langs.spain);
+  const [messages, setMessages] = useState<Array<Message>>([]);
+  const [username, setUsername] = useState<string | undefined>();
+  const [lang, setLang] = useState<Lang>(langs.spain);
 
   const messageRef = useRef<HTMLInputElement>(null);
   const messagesRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -40,7 +63,7 @@ function Chat({ room }: { room? }) {
   }, [socket, room]);
 
   useEffect(() => {
-    socket?.on("send", (message) => {
+    socket?.on("send", (message: Message) => {
       setMessages((messages) => {
         if (messages.length + 1 > MAX_MESSAGES + MAX_MESSAGES_MARGIN) {
           setTimeout(() => {
@@ -55,17 +78,24 @@ function Chat({ room }: { room? }) {
     });
   }, [socket]);
 
-  function handleKeyDown({ key, currentTarget: { value: text } }) {
+  function handleKeyDown({
+    key,
+    currentTarget: { value: text },
+  }: KeyboardEvent<HTMLInputElement>) {
     if (key !== "Enter" || !text) {
       return;
     }
 
+    send(text);
+  }
+
+  function send(text: string) {
     clearInput();
 
     if (!username) {
       setUsername(text);
     } else {
-      socket.emit("send", {
+      socket?.emit("send", {
         message: text,
         username: username,
         room: room || "general",
@@ -82,14 +112,17 @@ function Chat({ room }: { room? }) {
   }
 
   function handleClickAvatar() {
-    handleKeyDown({
-      key: "Enter",
-      currentTarget: { value: messageRef.current.value },
-    });
+    if (!messageRef?.current?.value) {
+      return;
+    }
+
+    send(messageRef.current.value);
   }
 
   function clearInput() {
-    messageRef.current.value = "";
+    if (messageRef.current) {
+      messageRef.current.value = "";
+    }
   }
 
   return (
@@ -108,18 +141,21 @@ function Chat({ room }: { room? }) {
         </div>
         <ul ref={messagesRef} className="messages">
           {messages.map(
-            ({ message, username: messageUsername, translation }, index) => (
+            (
+              { message, username: messageUsername, translation }: Message,
+              index
+            ) => (
               <li
                 key={index}
                 className={`message appeared ${
                   messageUsername === username ? "right" : "left"
                 }`}
               >
-                <div className="avatar">{messageUsername.slice(0, 3)}</div>
+                <div className="avatar">{messageUsername?.slice(0, 3)}</div>
                 <div className="text_wrapper">
                   <div className="text">
                     {message}
-                    <small>{translation[lang.code]}</small>
+                    <small>{translation && translation[lang.code]}</small>
                   </div>
                 </div>
               </li>
@@ -344,5 +380,3 @@ function Chat({ room }: { room? }) {
     </>
   );
 }
-
-export default Chat;

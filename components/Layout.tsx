@@ -1,7 +1,11 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import Head from "next/head";
 
-function Layout({ children }) {
+export type Props = {
+  children: ReactNode;
+};
+
+export default function Layout({ children }: Props) {
   return (
     <>
       <Head>
@@ -24,5 +28,3 @@ function Layout({ children }) {
     </>
   );
 }
-
-export default Layout;
