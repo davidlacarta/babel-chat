@@ -1,74 +1,37 @@
-import { useRef, useEffect, useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent, useRef, useEffect } from "react";
 
-import useSocket from "client/useSocket";
-import { Message, Event } from "shared/types";
-
-const langs = {
-  spain: {
-    flag: "🇪🇸",
-    code: "es",
-    username: "Escribe tu nick aquí...",
-    message: "Escribe un mensaje aquí...",
-    send: "Enviar",
-  } as Lang,
-  england: {
-    flag: "🇬🇧",
-    code: "en",
-    username: "Type your username here...",
-    message: "Type a message here...",
-    send: "Send",
-  } as Lang,
-};
-
-const MAX_MESSAGES = 100;
-const MAX_MESSAGES_MARGIN = 10;
+import { Message } from "shared/types";
+import useMessages from "components/Chat/useMessages";
+import useLangs from "./useLangs";
+import scrollTop from "./helpers/scrollTop";
+import clearInput from "./helpers/clearInput";
 
 export type Props = {
   room?: string;
 };
 
-export type Lang = {
-  flag: string;
-  code: "es" | "en";
-  username: string;
-  message: string;
-  send: string;
-};
-
 export default function Chat({ room }: Props) {
-  const socket = useSocket();
-  const [messages, setMessages] = useState<Array<Message>>([]);
   const [username, setUsername] = useState<string | undefined>();
-  const [lang, setLang] = useState<Lang>(langs.spain);
+  const { lang, toogle: toogleLang } = useLangs();
+  const { messages, send: sendMessage } = useMessages({
+    room,
+    username,
+  });
 
-  const messageRef = useRef<HTMLInputElement>(null);
   const messagesRef = useRef<HTMLUListElement>(null);
+  const messageRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-    }
+    scrollTop(messagesRef);
   }, [messages]);
 
-  useEffect(() => {
-    socket?.emit(Event.JOIN_ROOM, room || "general");
-  }, [socket, room]);
+  function handleClickAvatar() {
+    if (!messageRef?.current?.value) {
+      return;
+    }
 
-  useEffect(() => {
-    socket?.on(Event.SEND_MESSAGE_TRANSLATED, (message: Message) => {
-      setMessages((messages) => {
-        if (messages.length + 1 > MAX_MESSAGES + MAX_MESSAGES_MARGIN) {
-          setTimeout(() => {
-            setMessages((messages) =>
-              messages.slice(messages.length - MAX_MESSAGES)
-            );
-          }, 1000);
-        }
-
-        return [...messages, message];
-      });
-    });
-  }, [socket]);
+    send(messageRef.current.value);
+  }
 
   function handleKeyDown({
     key,
@@ -82,39 +45,14 @@ export default function Chat({ room }: Props) {
   }
 
   function send(text: string) {
-    clearInput();
+    clearInput(messageRef);
 
     if (!username) {
       setUsername(text);
-    } else {
-      socket?.emit(Event.SEND_MESSAGE, {
-        message: text,
-        username: username,
-        room: room || "general",
-      });
-    }
-  }
-
-  function handleClickFlag() {
-    if (lang.code === langs.spain.code) {
-      setLang(langs.england);
-    } else {
-      setLang(langs.spain);
-    }
-  }
-
-  function handleClickAvatar() {
-    if (!messageRef?.current?.value) {
       return;
     }
 
-    send(messageRef.current.value);
-  }
-
-  function clearInput() {
-    if (messageRef.current) {
-      messageRef.current.value = "";
-    }
+    sendMessage(text);
   }
 
   return (
@@ -127,7 +65,7 @@ export default function Chat({ room }: Props) {
           <div className={`title ${room && "room"}`}>
             {(room && `🔒 ${room}`) || `Babel`}
           </div>
-          <div className="button" onClick={handleClickFlag}>
+          <div className="button" onClick={toogleLang}>
             {lang.flag}
           </div>
         </div>

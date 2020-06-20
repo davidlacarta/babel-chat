@@ -3,7 +3,8 @@ import GoogleCloudTranslate from "@google-cloud/translate";
 import { Server } from "http";
 
 import { translate } from "./translation";
-import { Event, Message } from "../shared/types";
+import { Message } from "../shared/types";
+import Event from "../shared/Event";
 
 export default { create };
 
@@ -11,13 +12,13 @@ function create(server: Server) {
   const socketIO = SocketIO(server);
   const googleCloudTranslate = createGoogleCloudTranslate();
 
-  socketIO.on(Event.CONNECTION, (socket: SocketIO.Socket) => {
-    socket.on(Event.JOIN_ROOM, (room: string) => {
+  socketIO.on(Event.server.connection, (socket: SocketIO.Socket) => {
+    socket.on(Event.client.joinRoom, (room: string) => {
       Object.keys(socket.rooms).forEach((room) => socket.leave(room));
       socket.join(room);
     });
 
-    socket.on(Event.SEND_MESSAGE, async (message: Message) => {
+    socket.on(Event.client.sendMessage, async (message: Message) => {
       const [es, en] = [
         await translate({
           googleCloudTranslate,
@@ -35,7 +36,7 @@ function create(server: Server) {
 
       socketIO
         .in(message.room)
-        .emit(Event.SEND_MESSAGE_TRANSLATED, messageTranslated);
+        .emit(Event.server.sendMessage, messageTranslated);
     });
   });
 }
