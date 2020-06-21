@@ -3,8 +3,8 @@ import GoogleCloudTranslate from "@google-cloud/translate";
 import { Server } from "http";
 
 import { translate } from "./translation";
-import { Message } from "../shared/types";
-import Event from "../shared/Event";
+import { Message } from "./shared/types";
+import Event from "./shared/Event";
 
 export default { create };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
-import Event from "../../shared/Event";
-import { Message } from "shared/types";
+import Event from "../../server/shared/Event";
+import { Message } from "../../server/shared/types";
 
 const MAX_MESSAGES = 100;
 const MAX_MESSAGES_MARGIN = 10;

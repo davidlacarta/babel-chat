@@ -1,5 +1,5 @@
 import React, { RefObject } from "react";
-import { Message } from "shared/types";
+import { Message } from "server/shared/types";
 import { Lang } from "./useLangs";
 
 type Props = {
