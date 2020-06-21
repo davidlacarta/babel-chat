@@ -5,6 +5,9 @@ export default {
   },
   server: {
     connection: "connection",
+    disconnect: "disconnect",
     sendMessage: "server:send_message",
+    joinUser: "server:join_user",
+    disconnectUser: "server:disconnect_user",
   },
 };

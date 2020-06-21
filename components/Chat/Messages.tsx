@@ -1,5 +1,5 @@
 import React, { RefObject } from "react";
-import { Message } from "server/shared/types";
+import { Message, MessageType } from "server/shared/types";
 import { Lang } from "./useLangs";
 
 type Props = {
@@ -20,24 +20,45 @@ export default function Messages({
       <ul ref={messagesRef} className="messages">
         {messages.map(
           (
-            { message, username: messageUsername, translation }: Message,
+            { content, username: messageUsername, translation, type }: Message,
             index
-          ) => (
-            <li
-              key={index}
-              className={`message appeared ${
-                messageUsername === username ? "right" : "left"
-              }`}
-            >
-              <div className="avatar">{messageUsername?.slice(0, 3)}</div>
-              <div className="text_wrapper">
-                <div className="text">
-                  {message}
-                  <small>{translation && translation[lang.code]}</small>
-                </div>
-              </div>
-            </li>
-          )
+          ) => {
+            switch (type) {
+              case MessageType.USER_HAS_JOINED:
+                return (
+                  <li key={index} className="message joined appeared">
+                    {`👋 User `}
+                    <strong>{content}</strong>
+                    {` has joined`}
+                  </li>
+                );
+              case MessageType.USER_HAS_DISCONNECTED:
+                return (
+                  <li key={index} className="message disconnected appeared">
+                    {`🏃 User `}
+                    <strong>{content}</strong>
+                    {` has disconnected`}
+                  </li>
+                );
+              default:
+                return (
+                  <li
+                    key={index}
+                    className={`message appeared ${
+                      messageUsername === username ? "right" : "left"
+                    }`}
+                  >
+                    <div className="avatar">{messageUsername?.slice(0, 3)}</div>
+                    <div className="text_wrapper">
+                      <div className="text">
+                        {content}
+                        <small>{translation && translation[lang.code]}</small>
+                      </div>
+                    </div>
+                  </li>
+                );
+            }
+          }
         )}
       </ul>
       <style jsx>{`
@@ -56,6 +77,14 @@ export default function Messages({
           margin-bottom: 20px;
           transition: all 0.5s linear;
           opacity: 0;
+        }
+        .messages .message.joined {
+          text-align: center;
+          color: #a3d063;
+        }
+        .messages .message.disconnected {
+          text-align: center;
+          color: darkred;
         }
         .messages .message.left .avatar {
           background-color: #f5886e;
