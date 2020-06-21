@@ -26,19 +26,21 @@ export default function Messages({
             switch (type) {
               case MessageType.USER_HAS_JOINED:
                 return (
-                  <li key={index} className="message joined appeared">
-                    {`👋 User `}
-                    <strong>{content}</strong>
-                    {` has joined`}
-                  </li>
+                  <li
+                    key={index}
+                    className="message joined appeared"
+                    dangerouslySetInnerHTML={{ __html: lang.joined(username!) }}
+                  ></li>
                 );
               case MessageType.USER_HAS_DISCONNECTED:
                 return (
-                  <li key={index} className="message disconnected appeared">
-                    {`🏃 User `}
-                    <strong>{content}</strong>
-                    {` has disconnected`}
-                  </li>
+                  <li
+                    key={index}
+                    className="message disconnected appeared"
+                    dangerouslySetInnerHTML={{
+                      __html: lang.disconnected(username!),
+                    }}
+                  ></li>
                 );
               default:
                 return (
