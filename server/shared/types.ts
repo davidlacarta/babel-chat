@@ -1,7 +1,8 @@
 export type Message = {
   type: MessageType;
+  createdAt: Date;
   content?: string;
-  username?: string;
+  author?: string;
   translation?: Translation;
 };
 
@@ -23,10 +24,12 @@ export type ClientJoinRoom = {
 
 export type ServerJoinUser = {
   username: string;
+  at: Date;
 };
 
 export type ServerDisconnectUser = {
   username: string;
+  at: Date;
 };
 
 export type ClientSendMessage = {

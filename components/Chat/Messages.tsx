@@ -20,7 +20,7 @@ export default function Messages({
       <ul ref={messagesRef} className="messages">
         {messages.map(
           (
-            { content, username: messageUsername, translation, type }: Message,
+            { content, author, translation, type, createdAt }: Message,
             index
           ) => {
             switch (type) {
@@ -29,7 +29,11 @@ export default function Messages({
                   <li
                     key={index}
                     className="message joined appeared"
-                    dangerouslySetInnerHTML={{ __html: lang.joined(content!) }}
+                    dangerouslySetInnerHTML={{
+                      __html: `${lang.joined(content!)} <small>${format(
+                        createdAt
+                      )}</small>`,
+                    }}
                   ></li>
                 );
               case MessageType.USER_HAS_DISCONNECTED:
@@ -38,7 +42,9 @@ export default function Messages({
                     key={index}
                     className="message disconnected appeared"
                     dangerouslySetInnerHTML={{
-                      __html: lang.disconnected(content!),
+                      __html: `${lang.disconnected(content!)} <small>${format(
+                        createdAt
+                      )}</small>`,
                     }}
                   ></li>
                 );
@@ -47,14 +53,15 @@ export default function Messages({
                   <li
                     key={index}
                     className={`message appeared ${
-                      messageUsername === username ? "right" : "left"
+                      author === username ? "right" : "left"
                     }`}
                   >
-                    <div className="avatar">{messageUsername?.slice(0, 3)}</div>
+                    <div className="avatar">{author?.slice(0, 3)}</div>
                     <div className="text_wrapper">
                       <div className="text">
                         {content}
                         <small>{translation && translation[lang.code]}</small>
+                        <span>{format(createdAt)}</span>
                       </div>
                     </div>
                   </li>
@@ -169,7 +176,23 @@ export default function Messages({
           display: block;
           color: gray;
         }
+
+        .messages .message .text_wrapper .text span {
+          font-size: small;
+          color: lightslategray;
+          position: absolute;
+          bottom: 1rem;
+          right: 1rem;
+        }
       `}</style>
     </>
   );
+}
+
+function format(dateTime: Date) {
+  const [, time] = dateTime.toString().split("T");
+
+  const [hours, minutes] = time.split(":");
+
+  return `${hours}:${minutes}`;
 }

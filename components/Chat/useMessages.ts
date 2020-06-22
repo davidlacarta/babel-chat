@@ -7,6 +7,7 @@ import {
   ServerJoinUser,
   MessageType,
   ServerDisconnectUser,
+  ClientSendMessage,
 } from "../../server/shared/types";
 
 const MAX_MESSAGES = 100;
@@ -43,17 +44,22 @@ export default function useMessages({ room = "general", username }: Props) {
       setMessages((messages) => [...messages, message]);
     });
 
-    socket?.on(Event.server.joinUser, ({ username }: ServerJoinUser) => {
-      const message = { content: username, type: MessageType.USER_HAS_JOINED };
+    socket?.on(Event.server.joinUser, ({ username, at }: ServerJoinUser) => {
+      const message: Message = {
+        content: username,
+        createdAt: at,
+        type: MessageType.USER_HAS_JOINED,
+      };
 
       setMessages((messages) => [...messages, message]);
     });
 
     socket?.on(
       Event.server.disconnectUser,
-      ({ username }: ServerDisconnectUser) => {
+      ({ username, at }: ServerDisconnectUser) => {
         const message = {
           content: username,
+          createdAt: at,
           type: MessageType.USER_HAS_DISCONNECTED,
         };
 
@@ -76,13 +82,17 @@ export default function useMessages({ room = "general", username }: Props) {
   }, [messages]);
 
   function send(text: string) {
-    socket?.emit(Event.client.sendMessage, {
+    const clientSendMessage: ClientSendMessage = {
       message: {
+        type: MessageType.TEXT,
         content: text,
-        username,
+        createdAt: new Date(),
+        author: username,
       },
       room,
-    });
+    };
+
+    socket?.emit(Event.client.sendMessage, clientSendMessage);
   }
 
   return { messages, send };

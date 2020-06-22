@@ -3,7 +3,13 @@ import GoogleCloudTranslate from "@google-cloud/translate";
 import { Server } from "http";
 
 import { translate } from "./translation";
-import { ClientSendMessage, ClientJoinRoom } from "./shared/types";
+import {
+  ClientSendMessage,
+  ClientJoinRoom,
+  ServerJoinUser,
+  ServerSendMessage,
+  ServerDisconnectUser,
+} from "./shared/types";
 import Event from "./shared/Event";
 
 export default { create };
@@ -26,7 +32,9 @@ function create(server: Server) {
       session.rooms.push(room);
       session.username = username;
 
-      socketIO.in(room).emit(Event.server.joinUser, { username });
+      const serverJoinUser: ServerJoinUser = { username, at: new Date() };
+
+      socketIO.in(room).emit(Event.server.joinUser, serverJoinUser);
     });
 
     socket.on(
@@ -45,17 +53,25 @@ function create(server: Server) {
           }),
         ];
 
-        const messageTranslated = { ...message, translation: { es, en } };
+        const messageTranslated: ServerSendMessage = {
+          ...message,
+          translation: { es, en },
+        };
 
         socketIO.in(room).emit(Event.server.sendMessage, messageTranslated);
       }
     );
 
     socket.on(Event.server.disconnect, () => {
+      const serverDisconnectUser: ServerDisconnectUser = {
+        username: session.username!,
+        at: new Date(),
+      };
+
       [...session.rooms].forEach((room) =>
         socketIO
           .in(room)
-          .emit(Event.server.disconnectUser, { username: session.username })
+          .emit(Event.server.disconnectUser, serverDisconnectUser)
       );
     });
   });
