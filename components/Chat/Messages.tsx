@@ -29,7 +29,7 @@ export default function Messages({
                   <li
                     key={index}
                     className="message joined appeared"
-                    dangerouslySetInnerHTML={{ __html: lang.joined(username!) }}
+                    dangerouslySetInnerHTML={{ __html: lang.joined(content!) }}
                   ></li>
                 );
               case MessageType.USER_HAS_DISCONNECTED:
@@ -38,7 +38,7 @@ export default function Messages({
                     key={index}
                     className="message disconnected appeared"
                     dangerouslySetInnerHTML={{
-                      __html: lang.disconnected(username!),
+                      __html: lang.disconnected(content!),
                     }}
                   ></li>
                 );
