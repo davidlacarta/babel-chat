@@ -8,6 +8,7 @@ export type Lang = {
   send: string;
   joined: (username: string) => string;
   disconnected: (username: string) => string;
+  typing: (writters: String[]) => string;
 };
 
 const langs = {
@@ -21,6 +22,10 @@ const langs = {
       `👋 Usuario <strong>${username}</strong> ha entrado en la sala`,
     disconnected: (username: string) =>
       `🏃 Usuario <strong>${username}</strong> ha salido de la sala`,
+    typing: (writters: String[]) =>
+      `✍ ${writters.join(", ")} está${
+        writters.length > 1 ? "n" : ""
+      } escribiendo...`,
   } as Lang,
   england: {
     flag: "🇬🇧",
@@ -32,6 +37,10 @@ const langs = {
       `👋 User <strong>${username}</strong> has joined into the room`,
     disconnected: (username: string) =>
       `🏃 User <strong>${username}</strong> has disconnected from room`,
+    typing: (writters: String[]) =>
+      `✍ ${writters.join(", ")} ${
+        writters.length > 1 ? "are" : "is"
+      } writing...`,
   } as Lang,
 };
 

@@ -7,6 +7,7 @@ type Props = {
   messageRef: RefObject<any>;
   handleKeyDown: (event: any) => void;
   handleClickAvatar: (event: any) => void;
+  handleBlur: (event: any) => void;
 };
 
 export default function Footer({
@@ -15,6 +16,7 @@ export default function Footer({
   messageRef,
   handleKeyDown,
   handleClickAvatar,
+  handleBlur,
 }: Props) {
   return (
     <>
@@ -25,6 +27,7 @@ export default function Footer({
             className="message_input"
             ref={messageRef}
             onKeyDown={handleKeyDown}
+            onBlur={handleBlur}
           />
         </div>
         <div className="avatar" onClick={handleClickAvatar}>

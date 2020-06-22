@@ -37,4 +37,21 @@ export type ClientSendMessage = {
   room: string;
 };
 
+export type ClientTyping = {
+  at: Date;
+  type: TypingType;
+  room: string;
+};
+
+export type ServerTyping = {
+  at: Date;
+  username: string;
+  type: TypingType;
+};
+
+export enum TypingType {
+  START = "start",
+  STOP = "stop",
+}
+
 export type ServerSendMessage = Message;

@@ -9,6 +9,9 @@ import {
   ServerJoinUser,
   ServerSendMessage,
   ServerDisconnectUser,
+  ClientTyping,
+  ServerTyping,
+  TypingType,
 } from "./shared/types";
 import Event from "./shared/Event";
 
@@ -68,11 +71,30 @@ function create(server: Server) {
         at: new Date(),
       };
 
+      const serverTyping: ServerTyping = {
+        at: new Date(),
+        username: session.username!,
+        type: TypingType.STOP,
+      };
+
       [...session.rooms].forEach((room) =>
         socketIO
           .in(room)
           .emit(Event.server.disconnectUser, serverDisconnectUser)
       );
+      [...session.rooms].forEach((room) =>
+        socketIO.in(room).emit(Event.server.typing, serverTyping)
+      );
+    });
+
+    socket.on(Event.client.typing, ({ at, room, type }: ClientTyping) => {
+      const serverTyping: ServerTyping = {
+        at,
+        username: session.username!,
+        type,
+      };
+
+      socketIO.in(room).emit(Event.server.typing, serverTyping);
     });
   });
 }

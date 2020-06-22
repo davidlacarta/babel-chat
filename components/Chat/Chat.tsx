@@ -7,6 +7,7 @@ import clearInput from "./helpers/clearInput";
 import Header from "./Header";
 import Messages from "./Messages";
 import Footer from "./Footer";
+import { TypingType } from "server/shared/types";
 
 export type Props = {
   room?: string;
@@ -15,7 +16,7 @@ export type Props = {
 export default function Chat({ room }: Props) {
   const [username, setUsername] = useState<string | undefined>();
   const { lang, toogle: toogleLang } = useLangs();
-  const { messages, send: sendMessage } = useMessages({
+  const { messages, writters, send: sendMessage, typing } = useMessages({
     room,
     username,
   });
@@ -39,11 +40,28 @@ export default function Chat({ room }: Props) {
     key,
     currentTarget: { value: text },
   }: KeyboardEvent<HTMLInputElement>) {
-    if (key !== "Enter" || !text) {
+    if (!text) {
+      if (username) {
+        typing(TypingType.STOP);
+      }
+      return;
+    }
+
+    if (username) {
+      typing(TypingType.START);
+    }
+
+    if (key !== "Enter") {
       return;
     }
 
     send(text);
+  }
+
+  function handleBlur() {
+    if (username) {
+      typing(TypingType.STOP);
+    }
   }
 
   function send(text: string) {
@@ -54,6 +72,7 @@ export default function Chat({ room }: Props) {
       return;
     }
 
+    typing(TypingType.STOP);
     sendMessage(text);
   }
 
@@ -71,6 +90,7 @@ export default function Chat({ room }: Props) {
           lang={lang}
           messagesRef={messagesRef}
           messages={messages}
+          writters={writters}
         />
         <Footer
           username={username}
@@ -78,6 +98,7 @@ export default function Chat({ room }: Props) {
           messageRef={messageRef}
           handleKeyDown={handleKeyDown}
           handleClickAvatar={handleClickAvatar}
+          handleBlur={handleBlur}
         />
       </div>
       <style jsx>{`

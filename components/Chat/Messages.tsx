@@ -7,6 +7,7 @@ type Props = {
   messages: Array<Message>;
   lang: Lang;
   username?: string;
+  writters: Array<string>;
 };
 
 export default function Messages({
@@ -14,7 +15,9 @@ export default function Messages({
   messages,
   lang,
   username,
+  writters,
 }: Props) {
+  const writtersWithoutMe = writters.filter((writter) => writter !== username);
   return (
     <>
       <ul ref={messagesRef} className="messages">
@@ -69,6 +72,11 @@ export default function Messages({
             }
           }
         )}
+        {writtersWithoutMe.length > 0 && (
+          <li className="message typing appeared">
+            {lang.typing(writtersWithoutMe)}
+          </li>
+        )}
       </ul>
       <style jsx>{`
         .messages {
@@ -94,6 +102,10 @@ export default function Messages({
         .messages .message.disconnected {
           text-align: center;
           color: darkred;
+        }
+        .messages .message.typing {
+          color: lightslategray;
+          text-align: center;
         }
         .messages .message.left .avatar {
           background-color: #f5886e;
