@@ -3,6 +3,7 @@ import { useState } from "react";
 export type Lang = {
   flag: string;
   code: "es" | "en";
+  locale: string;
   username: string;
   message: string;
   send: string;
@@ -15,6 +16,7 @@ const langs = {
   spain: {
     flag: "🇪🇸",
     code: "es",
+    locale: "es-ES",
     username: "Escribe tu nick aquí...",
     message: "Escribe un mensaje aquí...",
     send: "Enviar",
@@ -30,6 +32,7 @@ const langs = {
   england: {
     flag: "🇬🇧",
     code: "en",
+    locale: "en-GB",
     username: "Type your username here...",
     message: "Type a message here...",
     send: "Send",

@@ -34,7 +34,8 @@ export default function Messages({
                     className="message joined appeared"
                     dangerouslySetInnerHTML={{
                       __html: `${lang.joined(content!)} <small>${format(
-                        createdAt
+                        createdAt,
+                        lang.locale
                       )}</small>`,
                     }}
                   ></li>
@@ -46,7 +47,8 @@ export default function Messages({
                     className="message disconnected appeared"
                     dangerouslySetInnerHTML={{
                       __html: `${lang.disconnected(content!)} <small>${format(
-                        createdAt
+                        createdAt,
+                        lang.locale
                       )}</small>`,
                     }}
                   ></li>
@@ -64,7 +66,7 @@ export default function Messages({
                       <div className="text">
                         {content}
                         <small>{translation && translation[lang.code]}</small>
-                        <span>{format(createdAt)}</span>
+                        <span>{format(createdAt, lang.locale)}</span>
                       </div>
                     </div>
                   </li>
@@ -201,10 +203,10 @@ export default function Messages({
   );
 }
 
-function format(dateTime: Date) {
-  const [, time] = dateTime.toString().split("T");
-
-  const [hours, minutes] = time.split(":");
+function format(dateTime: Date, locale: string) {
+  const [hours, minutes] = new Date(dateTime)
+    .toLocaleTimeString(locale, { hour12: false })
+    .split(":");
 
   return `${hours}:${minutes}`;
 }
