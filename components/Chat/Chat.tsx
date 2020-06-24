@@ -15,6 +15,9 @@ import {
   Button,
   TextInput,
   FormField,
+  Text,
+  Avatar,
+  Paragraph,
 } from "grommet";
 
 export type Props = {
@@ -29,8 +32,8 @@ export default function Chat({ room }: Props) {
     username,
   });
 
-  const messagesRef = useRef<HTMLUListElement>(null);
-  const messageRef = useRef<HTMLInputElement>(null);
+  const messagesRef = useRef<any>(null);
+  const messageRef = useRef<any>(null);
 
   useEffect(() => {
     scrollTop(messagesRef);
@@ -87,29 +90,51 @@ export default function Chat({ room }: Props) {
   const writtersWithoutMe = writters.filter((writter) => writter !== username);
 
   return (
-    <Grid fill rows={["xsmall", "auto"]}>
-      <Header>
+    <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
+      <Header
+        justify="center"
+        gridArea="header"
+        background="dark-1"
+        elevation="medium"
+      >
         <Box
           direction="row"
           fill="horizontal"
           align="center"
-          alignContent="center"
+          justify="between"
+          width={{ max: "800px" }}
+          pad={{ horizontal: "large" }}
         >
-          <Heading>{(room && `🔒 ${room}`) || `Babel`}</Heading>
-          <span>{username?.slice(0, 3)}</span>
-          <button onClick={toogleLang}>{lang.flag}</button>
+          <Heading margin="0">
+            {`Babel`}
+            {room && (
+              <Text
+                style={{ marginLeft: "1rem" }}
+                margin="0"
+              >{`🔒 ${room}`}</Text>
+            )}
+          </Heading>
+          <Button onClick={toogleLang}>{lang.flag}</Button>
         </Box>
       </Header>
-      <Main>
-        <Grid fill rows={["auto", "xsmall"]}>
-          <Box background="light-3" overflow="auto" round margin="medium">
-            <ul ref={messagesRef}>
+      <Main gridArea="main">
+        <Grid fill rows={["auto", "xsmall"]} areas={[["messages"], ["input"]]}>
+          <Box align="center" gridArea="messages">
+            <Box
+              pad={{ bottom: "medium" }}
+              overflow="auto"
+              width={{ max: "800px" }}
+              style={{ scrollBehavior: "smooth" }}
+              ref={messagesRef}
+              fill
+            >
               {messages.map(
                 ({ content, author, translation, type, createdAt }, index) => {
                   switch (type) {
                     case MessageType.USER_HAS_JOINED:
                       return (
-                        <li
+                        <Text
+                          textAlign="center"
                           key={index}
                           dangerouslySetInnerHTML={{
                             __html: `${lang.joined(content!)} <small>${format(
@@ -117,12 +142,13 @@ export default function Chat({ room }: Props) {
                               lang.locale
                             )}</small>`,
                           }}
-                        ></li>
+                        ></Text>
                       );
                     case MessageType.USER_HAS_DISCONNECTED:
                       return (
-                        <li
+                        <Text
                           key={index}
+                          textAlign="center"
                           dangerouslySetInnerHTML={{
                             __html: `${lang.disconnected(
                               content!
@@ -131,51 +157,101 @@ export default function Chat({ room }: Props) {
                               lang.locale
                             )}</small>`,
                           }}
-                        ></li>
+                        ></Text>
                       );
                     default:
+                      const isSelf = author === username;
                       return (
-                        <li key={index}>
-                          <span>{author?.slice(0, 3)}</span>
-                          <span>{content}</span>
-                          <small>{translation && translation[lang.code]}</small>
-                          <span>{format(createdAt, lang.locale)}</span>
-                        </li>
+                        <Grid
+                          columns={
+                            isSelf
+                              ? ["auto", "min-content"]
+                              : ["min-content", "auto"]
+                          }
+                          areas={
+                            isSelf
+                              ? [["message", "avatar"]]
+                              : [["avatar", "message"]]
+                          }
+                          gap="small"
+                          key={index}
+                          margin="small"
+                        >
+                          <Avatar
+                            background={isSelf ? "accent-1" : "accent-2"}
+                            gridArea={"avatar"}
+                            size="large"
+                          >
+                            {author?.slice(0, 3)}
+                          </Avatar>
+                          <Box
+                            background="light-2"
+                            round
+                            pad="medium"
+                            gridArea={"message"}
+                            style={{ position: "relative" }}
+                          >
+                            <Paragraph margin="none" fill>
+                              {content}
+                            </Paragraph>
+                            <Paragraph
+                              fill
+                              margin="none"
+                              size="small"
+                              color="dark-3"
+                            >
+                              {translation && translation[lang.code]}
+                            </Paragraph>
+                            <Text
+                              size="xsmall"
+                              color="dark-3"
+                              style={{
+                                position: "absolute",
+                                right: "1rem",
+                                bottom: "1rem",
+                              }}
+                            >
+                              {format(createdAt, lang.locale)}
+                            </Text>
+                          </Box>
+                        </Grid>
                       );
                   }
                 }
               )}
               {writtersWithoutMe.length > 0 && (
-                <li>{lang.typing(writtersWithoutMe)}</li>
+                <Text textAlign="center">{lang.typing(writtersWithoutMe)}</Text>
               )}
-            </ul>
+            </Box>
           </Box>
-          <Box
-            direction="row"
-            margin={{ horizontal: "medium", vertical: "small" }}
-            pad="medium"
-            align="center"
-            gap="medium"
-            as="form"
-            width={{ max: "800px" }}
-            onSubmit={(event) => event.preventDefault()}
-          >
-            <FormField fill="horizontal" margin="0">
-              <TextInput
-                placeholder={username ? lang.message : lang.username}
-                ref={messageRef}
-                onKeyDown={handleKeyDown}
-                onBlur={handleBlur}
-              />
-            </FormField>
-            <Box align="center">
+          <Box align="center" gridArea="input" elevation="large">
+            <Grid
+              as="form"
+              columns={["auto", "min-content"]}
+              align="center"
+              gap="small"
+              pad={{ horizontal: "medium" }}
+              style={{ maxWidth: "800px" }}
+              fill
+              onSubmit={(event) => event.preventDefault()}
+            >
+              <Box fill="horizontal">
+                <FormField margin="0">
+                  <TextInput
+                    placeholder={username ? lang.message : lang.username}
+                    ref={messageRef}
+                    onKeyDown={handleKeyDown}
+                    onBlur={handleBlur}
+                  />
+                </FormField>
+              </Box>
               <Button
                 type="submit"
                 primary
                 icon={<Send />}
                 onClick={handleClickAvatar}
               />
-            </Box>
+            </Grid>
           </Box>
         </Grid>
       </Main>
