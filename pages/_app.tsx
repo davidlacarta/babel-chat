@@ -1,6 +1,6 @@
 import App from "next/app";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
-import { defaultTheme } from "styleguide/theme";
+import theme from "styles/theme";
 import Head from "next/head";
 
 export default class MyApp extends App {
@@ -13,7 +13,7 @@ export default class MyApp extends App {
           <title>Babel</title>
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider theme={theme}>
           <Component {...pageProps} />
         </ThemeProvider>
       </>
@@ -26,7 +26,13 @@ const GlobalStyle = createGlobalStyle`
   body {
     padding: 0;
     margin: 0;
-    font-family: "Calibri", "Roboto", sans-serif;
+    font-family: ${theme.fonts.body}
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 
   * {
