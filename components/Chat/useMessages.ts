@@ -17,11 +17,11 @@ const MAX_MESSAGES = 100;
 const MAX_MESSAGES_MARGIN = 10;
 
 type Props = {
-  room?: string;
+  room: string;
   username?: string;
 };
 
-export default function useMessages({ room = "general", username }: Props) {
+export default function useMessages({ room, username }: Props) {
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
   const [messages, setMessages] = useState<Array<Message>>([]);
   const [writters, setWritters] = useState<Array<string>>([]);

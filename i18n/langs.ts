@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export type Lang = {
   flag: string;
   code: "es" | "en";
@@ -13,7 +11,7 @@ export type Lang = {
   typing: (writters: String[]) => string;
 };
 
-const langs = {
+export const langs = {
   spain: {
     flag: "🇪🇸",
     code: "es",
@@ -49,16 +47,3 @@ const langs = {
       } writing...`,
   } as Lang,
 };
-
-export default function useLangs() {
-  const [lang, setLang] = useState<Lang>(langs.spain);
-
-  function toogle() {
-    setLang(lang.code === langs.spain.code ? langs.england : langs.spain);
-  }
-
-  return {
-    lang,
-    toogle,
-  };
-}

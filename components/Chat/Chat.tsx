@@ -1,15 +1,13 @@
-import { useState, KeyboardEvent, useRef, useEffect, useContext } from "react";
+import { KeyboardEvent, useRef, useEffect, useContext } from "react";
 
 import useMessages from "components/Chat/useMessages";
-import useLangs from "./useLangs";
+import useLangs from "../../state/useLangs";
 import scrollTop from "./helpers/scrollTop";
 import clearInput from "./helpers/clearInput";
 import { TypingType, MessageType } from "server/shared/types";
 import { Send } from "grommet-icons";
 import {
-  Header,
   Main,
-  Heading,
   Grid,
   Box,
   Button,
@@ -18,19 +16,19 @@ import {
   Text,
   Avatar,
   Paragraph,
-  Form,
   ResponsiveContext,
 } from "grommet";
-import Es from "../flags/Es";
-import Uk from "../flags/Uk";
+import useUsername from "state/useUsername";
+import ChatHeader from "components/Header";
+import UsernameForm from "components/UsernameForm";
 
 export type Props = {
   room?: string;
 };
 
-export default function Chat({ room }: Props) {
-  const [username, setUsername] = useState<string | undefined>();
-  const { lang, toogle: toogleLang } = useLangs();
+export default function Chat({ room = "general" }: Props) {
+  const { username } = useUsername();
+  const { lang } = useLangs();
   const { messages, writters, send: sendMessage, typing } = useMessages({
     room,
     username,
@@ -45,7 +43,9 @@ export default function Chat({ room }: Props) {
   }, [messages]);
 
   useEffect(() => {
-    messageRef.current.focus();
+    if (messageRef.current) {
+      messageRef.current.focus();
+    }
   }, [username]);
 
   function handleClickAvatar() {
@@ -61,9 +61,7 @@ export default function Chat({ room }: Props) {
     currentTarget: { value: text },
   }: KeyboardEvent<HTMLInputElement>) {
     if (!text) {
-      if (username) {
-        typing(TypingType.STOP);
-      }
+      typing(TypingType.STOP);
       return;
     }
 
@@ -79,111 +77,32 @@ export default function Chat({ room }: Props) {
   }
 
   function handleBlur() {
-    if (username) {
-      typing(TypingType.STOP);
-    }
+    typing(TypingType.STOP);
   }
 
   function send(text: string) {
     clearInput(messageRef);
 
-    if (!username) {
-      setUsername(text);
-      return;
-    }
-
     typing(TypingType.STOP);
     sendMessage(text);
   }
 
-  const writtersWithoutMe = writters.filter((writter) => writter !== username);
-
   if (!username) {
     return (
       <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
-        <Header justify="center" gridArea="header" background="dark-1">
-          <Box
-            direction="row"
-            fill="horizontal"
-            align="center"
-            justify="between"
-            width={{ max: "800px" }}
-            pad={{ horizontal: "large" }}
-          >
-            <Box direction="row" align="center">
-              <Heading>Babel</Heading>
-              {room && <Text style={{ margin: "1rem" }}>{`🔒`}</Text>}
-            </Box>
-            <Button
-              style={{ width: "2rem", height: "2rem" }}
-              onClick={toogleLang}
-            >
-              {lang.code === "es" ? <Es /> : <Uk />}
-            </Button>
-          </Box>
-        </Header>
+        <ChatHeader room={room} />
         <Main gridArea="main">
-          <Box fill align="center" justify="center">
-            <Box width="medium">
-              <Form
-                style={{ margin: "1rem" }}
-                onSubmit={(event: any) => event.preventDefault()}
-              >
-                <FormField name="name">
-                  <TextInput
-                    size="xxlarge"
-                    style={{ textAlign: "center" }}
-                    placeholder={username ? lang.message : lang.username}
-                    ref={messageRef}
-                    onKeyDown={handleKeyDown}
-                    onBlur={handleBlur}
-                  />
-                </FormField>
-                <Box
-                  direction="row"
-                  justify="center"
-                  margin={{ top: "medium" }}
-                >
-                  <Button
-                    size="large"
-                    margin="medium"
-                    type="submit"
-                    label={lang.join}
-                    primary
-                    onClick={handleClickAvatar}
-                  />
-                </Box>
-              </Form>
-            </Box>
-          </Box>
+          <UsernameForm />
         </Main>
       </Grid>
     );
   }
 
+  const writtersWithoutMe = writters.filter((writter) => writter !== username);
+
   return (
     <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
-      <Header justify="center" gridArea="header" background="dark-1">
-        <Box
-          direction="row"
-          fill="horizontal"
-          align="center"
-          justify="between"
-          width={{ max: "800px" }}
-          pad={{ horizontal: "large" }}
-        >
-          <Box direction="row" align="center">
-            <Heading>Babel</Heading>
-            {room && <Text style={{ margin: "1rem" }}>{`🔒`}</Text>}
-          </Box>
-          <Button
-            style={{ width: "2rem", height: "2rem" }}
-            onClick={toogleLang}
-          >
-            {lang.code === "es" ? <Es /> : <Uk />}
-          </Button>
-        </Box>
-      </Header>
+      <ChatHeader room={room} />
       <Main gridArea="main">
         <Grid fill areas={[["messages"], ["input"]]} rows={["auto", "xsmall"]}>
           <Box align="center" gridArea="messages">

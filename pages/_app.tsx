@@ -1,12 +1,14 @@
 import App from "next/app";
 import Head from "next/head";
 import { Grommet, grommet as grommetTheme } from "grommet";
+import { StateProvider, reducer } from "../state";
+import { langs } from "i18n/langs";
 
 export default class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
     return (
-      <>
+      <StateProvider initialState={{ lang: langs.spain }} reducer={reducer}>
         <Head>
           <title>Babel</title>
           <link rel="icon" href="/favicon.ico" />
@@ -14,7 +16,7 @@ export default class MyApp extends App {
         <Grommet theme={grommetTheme} full>
           <Component {...pageProps} />
         </Grommet>
-      </>
+      </StateProvider>
     );
   }
 }
