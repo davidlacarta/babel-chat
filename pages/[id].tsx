@@ -1,13 +1,13 @@
 import React from "react";
 import { useRouter } from "next/router";
 
-import Chat from "../components/Chat/Chat";
+import Layout from "components/Layout";
 
 function PrivateChat() {
   const router = useRouter();
   const { id } = router.query;
 
-  return <Chat room={id as string} />;
+  return <Layout room={id as string} />;
 }
 
 export default PrivateChat;

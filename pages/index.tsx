@@ -1,5 +1,5 @@
-import Chat from "../components/Chat/Chat";
+import Layout from "components/Layout";
 
 export default function MainChat() {
-  return <Chat />;
+  return <Layout room="general" />;
 }
