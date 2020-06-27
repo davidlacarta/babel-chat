@@ -121,7 +121,7 @@ export default function Chat({ room }: Props) {
         <Grid fill rows={["auto", "xsmall"]} areas={[["messages"], ["input"]]}>
           <Box align="center" gridArea="messages">
             <Box
-              pad={{ bottom: "medium" }}
+              pad={{ top: "medium" }}
               overflow="auto"
               width={{ max: "800px" }}
               style={{ scrollBehavior: "smooth" }}
@@ -219,9 +219,9 @@ export default function Chat({ room }: Props) {
                   }
                 }
               )}
-              {writtersWithoutMe.length > 0 && (
-                <Text textAlign="center">{lang.typing(writtersWithoutMe)}</Text>
-              )}
+              <Text textAlign="center" style={{ minHeight: "2rem" }}>
+                {writtersWithoutMe.length > 0 && lang.typing(writtersWithoutMe)}
+              </Text>
             </Box>
           </Box>
           <Box align="center" gridArea="input" elevation="large">
