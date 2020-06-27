@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent, useRef, useEffect } from "react";
+import { useState, KeyboardEvent, useRef, useEffect, useContext } from "react";
 
 import useMessages from "components/Chat/useMessages";
 import useLangs from "./useLangs";
@@ -18,7 +18,11 @@ import {
   Text,
   Avatar,
   Paragraph,
+  Form,
+  ResponsiveContext,
 } from "grommet";
+import Es from "../flags/Es";
+import Uk from "../flags/Uk";
 
 export type Props = {
   room?: string;
@@ -31,6 +35,7 @@ export default function Chat({ room }: Props) {
     room,
     username,
   });
+  const size = useContext(ResponsiveContext);
 
   const messagesRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
@@ -38,6 +43,10 @@ export default function Chat({ room }: Props) {
   useEffect(() => {
     scrollTop(messagesRef);
   }, [messages]);
+
+  useEffect(() => {
+    messageRef.current.focus();
+  }, [username]);
 
   function handleClickAvatar() {
     if (!messageRef?.current?.value) {
@@ -89,14 +98,72 @@ export default function Chat({ room }: Props) {
 
   const writtersWithoutMe = writters.filter((writter) => writter !== username);
 
+  if (!username) {
+    return (
+      <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
+        <Header justify="center" gridArea="header" background="dark-1">
+          <Box
+            direction="row"
+            fill="horizontal"
+            align="center"
+            justify="between"
+            width={{ max: "800px" }}
+            pad={{ horizontal: "large" }}
+          >
+            <Box direction="row" align="center">
+              <Heading>Babel</Heading>
+              {room && <Text style={{ margin: "1rem" }}>{`🔒`}</Text>}
+            </Box>
+            <Button
+              style={{ width: "2rem", height: "2rem" }}
+              onClick={toogleLang}
+            >
+              {lang.code === "es" ? <Es /> : <Uk />}
+            </Button>
+          </Box>
+        </Header>
+        <Main gridArea="main">
+          <Box fill align="center" justify="center">
+            <Box width="medium">
+              <Form
+                style={{ margin: "1rem" }}
+                onSubmit={(event: any) => event.preventDefault()}
+              >
+                <FormField name="name">
+                  <TextInput
+                    size="xxlarge"
+                    style={{ textAlign: "center" }}
+                    placeholder={username ? lang.message : lang.username}
+                    ref={messageRef}
+                    onKeyDown={handleKeyDown}
+                    onBlur={handleBlur}
+                  />
+                </FormField>
+                <Box
+                  direction="row"
+                  justify="center"
+                  margin={{ top: "medium" }}
+                >
+                  <Button
+                    size="large"
+                    margin="medium"
+                    type="submit"
+                    label={lang.join}
+                    primary
+                    onClick={handleClickAvatar}
+                  />
+                </Box>
+              </Form>
+            </Box>
+          </Box>
+        </Main>
+      </Grid>
+    );
+  }
+
   return (
     <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
-      <Header
-        justify="center"
-        gridArea="header"
-        background="dark-1"
-        elevation="medium"
-      >
+      <Header justify="center" gridArea="header" background="dark-1">
         <Box
           direction="row"
           fill="horizontal"
@@ -105,20 +172,20 @@ export default function Chat({ room }: Props) {
           width={{ max: "800px" }}
           pad={{ horizontal: "large" }}
         >
-          <Heading margin="0">
-            {`Babel`}
-            {room && (
-              <Text
-                style={{ marginLeft: "1rem" }}
-                margin="0"
-              >{`🔒 ${room}`}</Text>
-            )}
-          </Heading>
-          <Button onClick={toogleLang}>{lang.flag}</Button>
+          <Box direction="row" align="center">
+            <Heading>Babel</Heading>
+            {room && <Text style={{ margin: "1rem" }}>{`🔒`}</Text>}
+          </Box>
+          <Button
+            style={{ width: "2rem", height: "2rem" }}
+            onClick={toogleLang}
+          >
+            {lang.code === "es" ? <Es /> : <Uk />}
+          </Button>
         </Box>
       </Header>
       <Main gridArea="main">
-        <Grid fill rows={["auto", "xsmall"]} areas={[["messages"], ["input"]]}>
+        <Grid fill areas={[["messages"], ["input"]]} rows={["auto", "xsmall"]}>
           <Box align="center" gridArea="messages">
             <Box
               pad={{ top: "medium" }}
@@ -135,6 +202,7 @@ export default function Chat({ room }: Props) {
                       return (
                         <Text
                           textAlign="center"
+                          size="small"
                           key={index}
                           dangerouslySetInnerHTML={{
                             __html: `${lang.joined(content!)} <small>${format(
@@ -148,6 +216,7 @@ export default function Chat({ room }: Props) {
                       return (
                         <Text
                           key={index}
+                          size="small"
                           textAlign="center"
                           dangerouslySetInnerHTML={{
                             __html: `${lang.disconnected(
@@ -173,14 +242,15 @@ export default function Chat({ room }: Props) {
                               ? [["message", "avatar"]]
                               : [["avatar", "message"]]
                           }
+                          justifyContent={isSelf ? "end" : "start"}
                           gap="small"
                           key={index}
-                          margin="small"
+                          margin="medium"
                         >
                           <Avatar
                             background={isSelf ? "accent-1" : "accent-2"}
                             gridArea={"avatar"}
-                            size="large"
+                            size={size === "small" ? "medium" : "large"}
                           >
                             {author?.slice(0, 3)}
                           </Avatar>
@@ -189,7 +259,10 @@ export default function Chat({ room }: Props) {
                             round
                             pad="medium"
                             gridArea={"message"}
-                            style={{ position: "relative" }}
+                            style={{
+                              position: "relative",
+                              paddingRight: "3rem",
+                            }}
                           >
                             <Paragraph margin="none" fill>
                               {content}
@@ -207,8 +280,8 @@ export default function Chat({ room }: Props) {
                               color="dark-3"
                               style={{
                                 position: "absolute",
-                                right: "1rem",
-                                bottom: "1rem",
+                                right: size === "small" ? "0.7rem" : "1rem",
+                                bottom: size === "small" ? "0.7rem" : "1rem",
                               }}
                             >
                               {format(createdAt, lang.locale)}
@@ -219,12 +292,16 @@ export default function Chat({ room }: Props) {
                   }
                 }
               )}
-              <Text textAlign="center" style={{ minHeight: "2rem" }}>
+              <Text
+                textAlign="center"
+                size="small"
+                style={{ minHeight: "2rem" }}
+              >
                 {writtersWithoutMe.length > 0 && lang.typing(writtersWithoutMe)}
               </Text>
             </Box>
           </Box>
-          <Box align="center" gridArea="input" elevation="large">
+          <Box align="center" gridArea="input">
             <Grid
               as="form"
               columns={["auto", "min-content"]}

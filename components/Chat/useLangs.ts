@@ -7,6 +7,7 @@ export type Lang = {
   username: string;
   message: string;
   send: string;
+  join: string;
   joined: (username: string) => string;
   disconnected: (username: string) => string;
   typing: (writters: String[]) => string;
@@ -17,13 +18,14 @@ const langs = {
     flag: "🇪🇸",
     code: "es",
     locale: "es-ES",
-    username: "Escribe tu nick aquí...",
+    username: "Tú nombre",
     message: "Escribe un mensaje aquí...",
     send: "Enviar",
+    join: "Entrar",
     joined: (username: string) =>
-      `👋 Usuario <strong>${username}</strong> ha entrado en la sala`,
+      `👋 Usuario <strong>${username}</strong> ha entrado`,
     disconnected: (username: string) =>
-      `🏃 Usuario <strong>${username}</strong> ha salido de la sala`,
+      `🏃 Usuario <strong>${username}</strong> ha salido`,
     typing: (writters: String[]) =>
       `✍ ${writters.join(", ")} está${
         writters.length > 1 ? "n" : ""
@@ -33,13 +35,14 @@ const langs = {
     flag: "🇬🇧",
     code: "en",
     locale: "en-GB",
-    username: "Type your username here...",
+    username: "Your name",
     message: "Type a message here...",
     send: "Send",
+    join: "Join",
     joined: (username: string) =>
-      `👋 User <strong>${username}</strong> has joined into the room`,
+      `👋 User <strong>${username}</strong> has joined`,
     disconnected: (username: string) =>
-      `🏃 User <strong>${username}</strong> has disconnected from room`,
+      `🏃 User <strong>${username}</strong> has disconnected`,
     typing: (writters: String[]) =>
       `✍ ${writters.join(", ")} ${
         writters.length > 1 ? "are" : "is"
