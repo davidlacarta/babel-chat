@@ -123,15 +123,17 @@ const Container = ({ children, messagesRef }: any) => (
 );
 
 const MessageContainer = ({ children, isAuthor }: any) => (
-  <Grid
-    columns={isAuthor ? ["auto", "min-content"] : ["min-content", "auto"]}
-    areas={isAuthor ? [["message", "avatar"]] : [["avatar", "message"]]}
-    justifyContent={isAuthor ? "end" : "start"}
-    gap="small"
-    margin="medium"
-  >
-    {children}
-  </Grid>
+  <Box animation="fadeIn" style={{ minHeight: "auto" }}>
+    <Grid
+      columns={isAuthor ? ["auto", "min-content"] : ["min-content", "auto"]}
+      areas={isAuthor ? [["message", "avatar"]] : [["avatar", "message"]]}
+      justifyContent={isAuthor ? "end" : "start"}
+      gap="small"
+      margin="medium"
+    >
+      {children}
+    </Grid>
+  </Box>
 );
 
 const UserAvatar = ({ children, isAuthor, size }: any) => (
@@ -185,11 +187,12 @@ const MessageTime = ({ children, size }: any) => (
   </Text>
 );
 
-function MessageStatus({ html }: any) {
+function MessageStatus({ html, style }: any) {
   return (
     <Text
       textAlign="center"
       size="small"
+      style={style}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
