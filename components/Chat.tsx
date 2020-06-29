@@ -1,6 +1,6 @@
 import { Grid, Box } from "grommet";
-import MessageForm from "components/MessageForm";
-import Messages from "components/Messages";
+import MessageForm from "components/Messages/MessageForm";
+import Messages from "components/Messages/Messages";
 import useMessages from "./useMessages";
 
 export type Props = {

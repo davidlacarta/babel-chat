@@ -4,14 +4,14 @@ import { Grid, Box, FormField, TextInput, Button } from "grommet";
 import useUsername from "state/useUsername";
 import useLangs from "state/useLangs";
 import { TypingType } from "server/shared/types";
-import clearInput from "./helpers/clearInput";
+import clearInput from "../helpers/clearInput";
 
 type Props = {
   send: (message: string) => void;
   typing: (type: TypingType) => void;
 };
 
-function MessageForm({ send: sendMessage, typing }: Props) {
+export default function MessageForm({ send: sendMessage, typing }: Props) {
   const { username } = useUsername();
   const { lang } = useLangs();
 
@@ -56,6 +56,7 @@ function MessageForm({ send: sendMessage, typing }: Props) {
 
     sendMessage(text);
   }
+
   return (
     <Grid
       as="form"
@@ -63,9 +64,9 @@ function MessageForm({ send: sendMessage, typing }: Props) {
       align="center"
       gap="small"
       pad={{ horizontal: "medium" }}
-      style={{ maxWidth: "800px" }}
       fill
-      onSubmit={(event) => event.preventDefault()}
+      style={{ maxWidth: "800px" }}
+      onSubmit={(event: any) => event.preventDefault()}
     >
       <Box fill="horizontal">
         <FormField margin="0">
@@ -77,9 +78,7 @@ function MessageForm({ send: sendMessage, typing }: Props) {
           />
         </FormField>
       </Box>
-      <Button type="submit" primary icon={<Send />} onClick={handleClick} />
+      <Button primary type="submit" icon={<Send />} onClick={handleClick} />
     </Grid>
   );
 }
-
-export default MessageForm;

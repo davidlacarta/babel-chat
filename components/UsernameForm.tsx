@@ -3,7 +3,7 @@ import { Box, Form, FormField, TextInput, Button } from "grommet";
 import useUsername from "state/useUsername";
 import useLangs from "state/useLangs";
 
-function UsernameForm() {
+export default function UsernameForm() {
   const { setUsername } = useUsername();
   const { lang } = useLangs();
 
@@ -53,8 +53,8 @@ function UsernameForm() {
               size="large"
               margin="medium"
               type="submit"
-              label={lang.join}
               primary
+              label={lang.join}
               onClick={handleClick}
             />
           </Box>
@@ -63,5 +63,3 @@ function UsernameForm() {
     </Box>
   );
 }
-
-export default UsernameForm;

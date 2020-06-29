@@ -12,21 +12,16 @@ type Props = {
 export default function Layout({ room }: Props) {
   const { username } = useUsername();
 
-  return (
-    <Page
-      header={<ChatHeader room={room} />}
-      main={
-        username ? <Chat room={room} username={username} /> : <UsernameForm />
-      }
-    />
+  const main = username ? (
+    <Chat room={room} username={username} />
+  ) : (
+    <UsernameForm />
   );
-}
 
-function Page({ header, main }: any) {
   return (
     <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
       <Header justify="center" gridArea="header" background="dark-1">
-        {header}
+        <ChatHeader room={room} />
       </Header>
       <Main gridArea="main">{main}</Main>
     </Grid>
