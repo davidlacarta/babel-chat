@@ -22,37 +22,43 @@ export default function useMessages({ room, username }: Props) {
   const socket = useSocket();
   const [messages, setMessages] = useState<Array<Message>>([]);
 
+  function addMessage({
+    username,
+    at,
+    type,
+  }: {
+    username: string;
+    at: Date;
+    type: MessageType;
+  }) {
+    const message: Message = {
+      content: username,
+      createdAt: at,
+      type,
+    };
+
+    setMessages((messages) => [...messages, message]);
+  }
+
   useEffect(() => {
     if (username) {
-      socket?.emit(Event.client.joinRoom, { room, username });
+      socket.emit(Event.client.joinRoom, { room, username });
     }
   }, [socket, room, username]);
 
   useEffect(() => {
-    socket?.on(Event.server.sendMessage, (message: ServerSendMessage) => {
+    socket.on(Event.server.sendMessage, (message: ServerSendMessage) => {
       setMessages((messages) => [...messages, message]);
     });
 
-    socket?.on(Event.server.joinUser, ({ username, at }: ServerJoinUser) => {
-      const message: Message = {
-        content: username,
-        createdAt: at,
-        type: MessageType.USER_HAS_JOINED,
-      };
-
-      setMessages((messages) => [...messages, message]);
+    socket.on(Event.server.joinUser, ({ username, at }: ServerJoinUser) => {
+      addMessage({ username, at, type: MessageType.USER_HAS_DISCONNECTED });
     });
 
-    socket?.on(
+    socket.on(
       Event.server.disconnectUser,
       ({ username, at }: ServerDisconnectUser) => {
-        const message = {
-          content: username,
-          createdAt: at,
-          type: MessageType.USER_HAS_DISCONNECTED,
-        };
-
-        setMessages((messages) => [...messages, message]);
+        addMessage({ username, at, type: MessageType.USER_HAS_DISCONNECTED });
       }
     );
   }, [socket]);
@@ -81,7 +87,7 @@ export default function useMessages({ room, username }: Props) {
       room,
     };
 
-    socket?.emit(Event.client.sendMessage, clientSendMessage);
+    socket.emit(Event.client.sendMessage, clientSendMessage);
   }
 
   return { messages, send };

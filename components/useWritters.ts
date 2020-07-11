@@ -13,33 +13,41 @@ export default function useWritters({ room, username }: Props) {
   const [writters, setWritters] = useState<Array<string>>([]);
 
   useEffect(() => {
-    socket?.on(Event.server.typing, ({ username, type }: ServerTyping) => {
-      setWritters((writters) =>
-        TypingType.START === type
-          ? [...new Set([...writters, username])]
-          : writters.filter((writter) => writter !== username)
-      );
-    });
+    function updateWrittersOnServerTyping() {
+      socket.on(Event.server.typing, ({ username, type }: ServerTyping) => {
+        setWritters((writters) =>
+          TypingType.START === type
+            ? [...new Set([...writters, username])]
+            : writters.filter((writter) => writter !== username)
+        );
+      });
+    }
+
+    updateWrittersOnServerTyping();
   }, [socket]);
 
   useEffect(() => {
-    const isWritting = writters.find((writter) => writter === username);
-    if (!isWritting) {
-      return;
-    }
-    setTimeout(() => {
+    function emitTypingStopEach({ seconds }: { seconds: number }) {
       const isWritting = writters.find((writter) => writter === username);
       if (!isWritting) {
         return;
       }
-      const clientTyping: ClientTyping = {
-        at: new Date(),
-        type: TypingType.STOP,
-        room,
-      };
+      setTimeout(() => {
+        const isWritting = writters.find((writter) => writter === username);
+        if (!isWritting) {
+          return;
+        }
+        const clientTyping: ClientTyping = {
+          at: new Date(),
+          type: TypingType.STOP,
+          room,
+        };
 
-      socket?.emit(Event.client.typing, clientTyping);
-    }, 5000);
+        socket.emit(Event.client.typing, clientTyping);
+      }, seconds * 1000);
+    }
+
+    emitTypingStopEach({ seconds: 5 });
   }, [writters]);
 
   function typing(type: TypingType) {
@@ -57,7 +65,7 @@ export default function useWritters({ room, username }: Props) {
       room,
     };
 
-    socket?.emit(Event.client.typing, clientTyping);
+    socket.emit(Event.client.typing, clientTyping);
   }
 
   return { writters, typing };
