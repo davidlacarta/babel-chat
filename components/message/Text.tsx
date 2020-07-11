@@ -11,13 +11,9 @@ type Props = {
   lang: Lang;
 };
 
-export default function TextMessage({
-  message: { author, content, translation, createdAt },
-  username,
-  lang,
-}: Props) {
+export default function TextMessage({ message, username, lang }: Props) {
   const size = useContext(ResponsiveContext);
-  const isAuthor = author === username;
+  const isAuthor = message.author === username;
 
   return (
     <Box style={{ minHeight: "auto" }}>
@@ -29,43 +25,56 @@ export default function TextMessage({
         margin="medium"
       >
         <Avatar
-          background={isAuthor ? "accent-1" : "accent-2"}
           gridArea={"avatar"}
+          background={isAuthor ? "accent-1" : "accent-2"}
           size={size === "small" ? "medium" : "large"}
         >
           <Text size={size === "small" ? "medium" : "large"}>
-            {formatAvatar(author!)}
+            {formatAvatar(message.author!)}
           </Text>
         </Avatar>
-        <Box
-          background="light-2"
-          round
-          pad="medium"
-          gridArea={"message"}
-          style={{
-            position: "relative",
-            paddingRight: "4rem",
-          }}
-        >
-          <Paragraph margin="none" fill>
-            {content}
-          </Paragraph>
-          <Paragraph fill margin="none" size="small" color="dark-3">
-            {translation && translation[lang.type]}
-          </Paragraph>
-          <Text
-            size="xsmall"
-            color="dark-4"
-            style={{
-              position: "absolute",
-              right: size === "small" ? "0.7rem" : "1.45rem",
-              bottom: size === "small" ? "0.7rem" : "1.45rem",
-            }}
-          >
-            {formatTime(createdAt, lang.locale)}
-          </Text>
-        </Box>
+        <MessageBox gridArea="message" message={message} lang={lang} />
       </Grid>
+    </Box>
+  );
+}
+
+function MessageBox({
+  gridArea,
+  message: { createdAt, content, translation },
+  lang,
+}: {
+  gridArea: string;
+  message: Message;
+  lang: Lang;
+}) {
+  const size = useContext(ResponsiveContext);
+
+  return (
+    <Box
+      background="light-2"
+      round
+      pad="medium"
+      gridArea={gridArea}
+      style={{ position: "relative", paddingRight: "4rem" }}
+    >
+      <Paragraph margin="none" fill>
+        {content}
+      </Paragraph>
+      <Paragraph fill margin="none" size="small" color="dark-3">
+        {translation && translation[lang.type]}
+      </Paragraph>
+      <Text
+        size="xsmall"
+        color="dark-4"
+        style={{
+          position: "absolute",
+          right: size === "small" ? "0.7rem" : "1.45rem",
+          bottom: size === "small" ? "0.7rem" : "1.45rem",
+        }}
+      >
+        {formatTime(createdAt, lang.locale)}
+      </Text>
     </Box>
   );
 }

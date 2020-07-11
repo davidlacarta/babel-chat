@@ -2,15 +2,13 @@ import { Text } from "grommet";
 import { Lang } from "i18n/langs";
 import formatTime from "../helpers/formatTime";
 
-export default function StatusMessage({
-  createdAt,
-  translated,
-  lang,
-}: {
+type Props = {
   createdAt: Date;
   translated: string;
   lang: Lang;
-}) {
+};
+
+export default function StatusMessage({ createdAt, translated, lang }: Props) {
   return (
     <Text
       textAlign="center"
