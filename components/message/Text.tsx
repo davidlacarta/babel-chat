@@ -51,7 +51,7 @@ export default function TextMessage({
             {content}
           </Paragraph>
           <Paragraph fill margin="none" size="small" color="dark-3">
-            {translation && translation[lang.code]}
+            {translation && translation[lang.type]}
           </Paragraph>
           <Text
             size="xsmall"

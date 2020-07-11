@@ -13,7 +13,7 @@ export default class MyApp extends App {
     return (
       <>
         <GlobalStyle />
-        <StateProvider initialState={{ socket: io(), lang: langs.spain }}>
+        <StateProvider initialState={{ socket: io(), lang: langs.spanish }}>
           <Head>
             <title>Babel</title>
             <link rel="icon" href="/favicon.ico" />

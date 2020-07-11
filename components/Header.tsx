@@ -3,7 +3,7 @@ import { Box, Heading, Button, Text } from "grommet";
 import Es from "./flags/Es";
 import Uk from "./flags/Uk";
 import useLangs from "state/useLangs";
-import { Lang } from "i18n/langs";
+import { Lang, LangType } from "i18n/langs";
 
 export type Props = {
   room: string;
@@ -35,7 +35,7 @@ export default function ChatHeader({ room }: Props) {
 }
 
 function Flag({ lang }: { lang: Lang }) {
-  return lang.code === "es" ? <Es /> : <Uk />;
+  return lang.type === LangType.SPANISH ? <Es /> : <Uk />;
 }
 
 function PrivateMark({ show }: { show: boolean }) {

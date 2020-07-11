@@ -1,5 +1,5 @@
 import { useGlobalState, ACTIONS } from "state/GlobalState";
-import { langs, Lang } from "i18n/langs";
+import { langs, Lang, LangType } from "i18n/langs";
 
 export default function useLangs() {
   const {
@@ -9,7 +9,8 @@ export default function useLangs() {
 
   function toogle() {
     const newLang =
-      lang.code === langs.spain.code ? langs.england : langs.spain;
+      lang.type === LangType.SPANISH ? langs.english : langs.spanish;
+
     dispatch({ type: ACTIONS.CHANGE_LANGUAGE, payload: newLang });
   }
 

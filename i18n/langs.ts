@@ -1,6 +1,5 @@
 export type Lang = {
-  flag: string;
-  code: "es" | "en";
+  type: LangType;
   locale: string;
   username: string;
   message: string;
@@ -11,10 +10,14 @@ export type Lang = {
   typing: (writters: String[]) => string;
 };
 
+export enum LangType {
+  SPANISH = "es",
+  ENGLISH = "en",
+}
+
 export const langs = {
-  spain: {
-    flag: "🇪🇸",
-    code: "es",
+  spanish: {
+    type: LangType.SPANISH,
     locale: "es-ES",
     username: "Tú nombre",
     message: "Escribe un mensaje aquí...",
@@ -29,9 +32,8 @@ export const langs = {
         writters.length > 1 ? "n" : ""
       } escribiendo...`,
   } as Lang,
-  england: {
-    flag: "🇬🇧",
-    code: "en",
+  english: {
+    type: LangType.ENGLISH,
     locale: "en-GB",
     username: "Your name",
     message: "Type a message here...",
