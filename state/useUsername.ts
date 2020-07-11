@@ -7,7 +7,7 @@ export default function useUsername() {
   } = useGlobalState();
 
   function setUsername(username: string) {
-    dispatch({ type: ACTIONS.CHANGE_USERNAME, username });
+    dispatch({ type: ACTIONS.CHANGE_USERNAME, payload: username });
   }
 
   return {

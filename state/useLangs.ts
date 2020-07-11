@@ -10,7 +10,7 @@ export default function useLangs() {
   function toogle() {
     const newLang =
       lang.code === langs.spain.code ? langs.england : langs.spain;
-    dispatch({ type: ACTIONS.CHANGE_LANGUAGE, lang: newLang });
+    dispatch({ type: ACTIONS.CHANGE_LANGUAGE, payload: newLang });
   }
 
   return {
