@@ -18,7 +18,7 @@ export default function UsersTyping({
   return (
     <Text
       textAlign="center"
-      size="small"
+      size="medium"
       style={{ minHeight: "2rem" }}
       dangerouslySetInnerHTML={{ __html: html }}
     />

@@ -14,7 +14,7 @@ export default function StatusMessage({
   return (
     <Text
       textAlign="center"
-      size="small"
+      size="medium"
       dangerouslySetInnerHTML={{
         __html: `${translated} <small>${formatTime(
           createdAt,

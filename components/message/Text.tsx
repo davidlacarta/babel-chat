@@ -20,7 +20,7 @@ export default function TextMessage({
   const isAuthor = author === username;
 
   return (
-    <Box animation="fadeIn" style={{ minHeight: "auto" }}>
+    <Box style={{ minHeight: "auto" }}>
       <Grid
         columns={isAuthor ? ["auto", "min-content"] : ["min-content", "auto"]}
         areas={isAuthor ? [["message", "avatar"]] : [["avatar", "message"]]}
@@ -44,7 +44,7 @@ export default function TextMessage({
           gridArea={"message"}
           style={{
             position: "relative",
-            paddingRight: "3rem",
+            paddingRight: "4rem",
           }}
         >
           <Paragraph margin="none" fill>
@@ -55,11 +55,11 @@ export default function TextMessage({
           </Paragraph>
           <Text
             size="xsmall"
-            color="dark-3"
+            color="dark-4"
             style={{
               position: "absolute",
-              right: size === "small" ? "0.7rem" : "1rem",
-              bottom: size === "small" ? "0.7rem" : "1rem",
+              right: size === "small" ? "0.7rem" : "1.45rem",
+              bottom: size === "small" ? "0.7rem" : "1.45rem",
             }}
           >
             {formatTime(createdAt, lang.locale)}
