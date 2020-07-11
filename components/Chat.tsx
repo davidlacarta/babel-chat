@@ -1,6 +1,7 @@
 import { Grid, Box } from "grommet";
 import MessageInput from "components/MessageInput";
 import Messages from "components/Messages";
+import useWritters from "./useWritters";
 import useMessages from "./useMessages";
 
 export type Props = {
@@ -9,10 +10,8 @@ export type Props = {
 };
 
 export default function Chat({ room, username }: Props) {
-  const { messages, writters, send, typing } = useMessages({
-    room,
-    username,
-  });
+  const { messages, send } = useMessages({ room, username });
+  const { writters, typing } = useWritters({ room, username });
 
   return (
     <Grid fill areas={[["messages"], ["input"]]} rows={["auto", "xsmall"]}>

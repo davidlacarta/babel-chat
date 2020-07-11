@@ -1,4 +1,4 @@
-import { useGlobalState, ACTIONS } from "state";
+import { useGlobalState, ACTIONS } from "state/GlobalState";
 import { langs, Lang } from "i18n/langs";
 
 export default function useLangs() {

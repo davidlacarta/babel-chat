@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
 import Event from "../server/shared/Event";
 import {
   Message,
@@ -8,10 +7,8 @@ import {
   MessageType,
   ServerDisconnectUser,
   ClientSendMessage,
-  TypingType,
-  ClientTyping,
-  ServerTyping,
 } from "../server/shared/types";
+import useSocket from "state/useSocket";
 
 const MAX_MESSAGES = 100;
 const MAX_MESSAGES_MARGIN = 10;
@@ -22,20 +19,8 @@ type Props = {
 };
 
 export default function useMessages({ room, username }: Props) {
-  const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
+  const socket = useSocket();
   const [messages, setMessages] = useState<Array<Message>>([]);
-  const [writters, setWritters] = useState<Array<string>>([]);
-
-  useEffect(() => {
-    const socketIo = io();
-
-    setSocket(socketIo);
-
-    return () => {
-      socketIo.removeAllListeners();
-      socketIo.close();
-    };
-  }, []);
 
   useEffect(() => {
     if (username) {
@@ -70,35 +55,7 @@ export default function useMessages({ room, username }: Props) {
         setMessages((messages) => [...messages, message]);
       }
     );
-
-    socket?.on(Event.server.typing, ({ username, type }: ServerTyping) => {
-      setWritters((writters) =>
-        TypingType.START === type
-          ? [...new Set([...writters, username])]
-          : writters.filter((writter) => writter !== username)
-      );
-    });
   }, [socket]);
-
-  useEffect(() => {
-    const isWritting = writters.find((writter) => writter === username);
-    if (!isWritting) {
-      return;
-    }
-    setTimeout(() => {
-      const isWritting = writters.find((writter) => writter === username);
-      if (!isWritting) {
-        return;
-      }
-      const clientTyping: ClientTyping = {
-        at: new Date(),
-        type: TypingType.STOP,
-        room,
-      };
-
-      socket?.emit(Event.client.typing, clientTyping);
-    }, 5000);
-  }, [writters]);
 
   useEffect(() => {
     const messagesLimitExceded =
@@ -127,23 +84,5 @@ export default function useMessages({ room, username }: Props) {
     socket?.emit(Event.client.sendMessage, clientSendMessage);
   }
 
-  function typing(type: TypingType) {
-    const isWritting = writters.find((writter) => writter === username);
-    if (
-      (TypingType.START === type && isWritting) ||
-      (TypingType.STOP === type && !isWritting)
-    ) {
-      return;
-    }
-
-    const clientTyping: ClientTyping = {
-      at: new Date(),
-      type,
-      room,
-    };
-
-    socket?.emit(Event.client.typing, clientTyping);
-  }
-
-  return { messages, writters, send, typing };
+  return { messages, send };
 }

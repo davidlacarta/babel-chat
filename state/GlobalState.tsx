@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, ReactNode } from "react";
 import { Lang } from "i18n/langs";
 
 type State = {
+  socket: SocketIOClient.Socket;
   lang: Lang;
   username?: string;
 };

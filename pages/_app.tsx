@@ -1,7 +1,8 @@
 import App from "next/app";
 import Head from "next/head";
 import { Grommet, grommet as grommetTheme } from "grommet";
-import { StateProvider } from "../state";
+import io from "socket.io-client";
+import { StateProvider } from "../state/GlobalState";
 import { langs } from "i18n/langs";
 import { createGlobalStyle } from "styled-components";
 
@@ -12,7 +13,7 @@ export default class MyApp extends App {
     return (
       <>
         <GlobalStyle />
-        <StateProvider initialState={{ lang: langs.spain }}>
+        <StateProvider initialState={{ socket: io(), lang: langs.spain }}>
           <Head>
             <title>Babel</title>
             <link rel="icon" href="/favicon.ico" />

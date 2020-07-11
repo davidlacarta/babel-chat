@@ -1,4 +1,4 @@
-import { useGlobalState, ACTIONS } from "state";
+import { useGlobalState, ACTIONS } from "state/GlobalState";
 
 export default function useUsername() {
   const {
