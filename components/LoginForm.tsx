@@ -3,7 +3,7 @@ import { Box, Form, FormField, TextInput, Button } from "grommet";
 import useUsername from "state/useUsername";
 import useLangs from "state/useLangs";
 
-export default function UsernameForm() {
+export default function LoginForm() {
   const { setUsername } = useUsername();
   const { lang } = useLangs();
 

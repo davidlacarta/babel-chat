@@ -1,6 +1,6 @@
 import { Grid, Box } from "grommet";
-import MessageForm from "components/Messages/MessageForm";
-import Messages from "components/Messages/Messages";
+import MessageInput from "components/MessageInput";
+import Messages from "components/Messages";
 import useMessages from "./useMessages";
 
 export type Props = {
@@ -20,7 +20,7 @@ export default function Chat({ room, username }: Props) {
         <Messages messages={messages} writters={writters} />
       </Box>
       <Box align="center" gridArea="input">
-        <MessageForm send={send} typing={typing} />
+        <MessageInput send={send} typing={typing} />
       </Box>
     </Grid>
   );

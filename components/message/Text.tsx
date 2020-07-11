@@ -11,7 +11,7 @@ type Props = {
   lang: Lang;
 };
 
-export default function MessageText({
+export default function TextMessage({
   message: { author, content, translation, createdAt },
   username,
   lang,

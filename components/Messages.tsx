@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { Box } from "grommet";
-import { Message as MessageTyped } from "server/shared/types";
 import useUsername from "state/useUsername";
 import useLangs from "state/useLangs";
-import scrollTop from "../helpers/scrollTop";
+import scrollTop from "./helpers/scrollTop";
 import { Lang } from "i18n/langs";
-import Message from "./Message";
-import Status from "./MessageType/Status";
+import { MessageType, Message as MessageTyped } from "server/shared/types";
+import TextMessage from "./message/Text";
+import StatusMessage from "./message/Status";
+import UsersTyping from "./UsersTyping";
 
 type Props = {
   messages: Array<MessageTyped>;
@@ -45,16 +46,26 @@ export default function Messages({ messages, writters }: Props) {
   );
 }
 
-type UsersTypingProps = {
-  writters: Array<string>;
+function Message({
+  message,
+  lang,
+  username,
+}: {
+  message: MessageTyped;
   username: string;
   lang: Lang;
-};
-
-function UsersTyping({ writters, username, lang }: UsersTypingProps) {
-  const writtersWithoutMe = writters.filter((writter) => writter !== username);
-  const html =
-    writtersWithoutMe.length > 0 ? lang.typing(writtersWithoutMe) : "";
-
-  return <Status html={html} style={{ minHeight: "2rem" }} />;
+}) {
+  return message.type === MessageType.TEXT ? (
+    <TextMessage message={message} username={username} lang={lang} />
+  ) : (
+    <StatusMessage
+      createdAt={message.createdAt}
+      translated={
+        message.type === MessageType.USER_HAS_JOINED
+          ? lang.joined(message.content!)
+          : lang.disconnected(message.content!)
+      }
+      lang={lang}
+    />
+  );
 }
