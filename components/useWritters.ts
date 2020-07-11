@@ -32,11 +32,13 @@ export default function useWritters({ room, username }: Props) {
       if (!isWritting) {
         return;
       }
+
       setTimeout(() => {
         const isWritting = writters.find((writter) => writter === username);
         if (!isWritting) {
           return;
         }
+
         const clientTyping: ClientTyping = {
           at: new Date(),
           type: TypingType.STOP,
