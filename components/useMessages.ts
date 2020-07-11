@@ -52,7 +52,7 @@ export default function useMessages({ room, username }: Props) {
     });
 
     socket.on(Event.server.joinUser, ({ username, at }: ServerJoinUser) => {
-      addMessage({ username, at, type: MessageType.USER_HAS_DISCONNECTED });
+      addMessage({ username, at, type: MessageType.USER_HAS_JOINED });
     });
 
     socket.on(
