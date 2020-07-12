@@ -58,18 +58,18 @@ const onClientSendMessage = ({
   socketIO,
   googleCloudTranslate,
 }: Context) => async ({ message, room }: ClientSendMessage) => {
-  const [es, en] = [
-    await translate({
+  const [es, en] = await Promise.all([
+    translate({
       googleCloudTranslate,
       message: message.content!,
       lang: "es",
     }),
-    await translate({
+    translate({
       googleCloudTranslate,
       message: message.content!,
       lang: "en",
     }),
-  ];
+  ]);
 
   const messageTranslated: ServerSendMessage = {
     ...message,
