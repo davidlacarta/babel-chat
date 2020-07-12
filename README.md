@@ -23,7 +23,7 @@ _It require **10 seconds** warm up to bootstrap at first time each 30 minutes of
   [http://babel-chat.herokuapp.com](http://babel-chat.herokuapp.com).
 - Private room [http://babel-chat.herokuapp.com/private-name-room-you-want](http://babel-chat.herokuapp.com/private-name-room-you-want).
 
-![screenshot](./docs/screenshot.png)
+![screenshot](./docs/babel.png)
 
 ## 📚️ Requeriments
 

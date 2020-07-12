@@ -14,7 +14,7 @@ export default function Layout({ room }: Props) {
 
   return (
     <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
-      <Header justify="center" gridArea="header" background="dark-1">
+      <Header justify="center" gridArea="header" background="light-2">
         <ChatHeader room={room} />
       </Header>
       <Main gridArea="main">
