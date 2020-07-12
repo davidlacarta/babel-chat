@@ -4,6 +4,7 @@ import { Message } from "server/shared/types";
 import { Lang } from "i18n/langs";
 import formatAvatar from "components/helpers/formatAvatar";
 import formatTime from "components/helpers/formatTime";
+import autoTranslate from "components/helpers/autoTranslate";
 
 type Props = {
   message: Message;
@@ -26,10 +27,10 @@ export default function TextMessage({ message, username, lang }: Props) {
       >
         <Avatar
           gridArea={"avatar"}
-          background={isAuthor ? "accent-1" : "accent-2"}
+          background={isAuthor ? "accent-4" : "accent-1"}
           size={size === "small" ? "medium" : "large"}
         >
-          <Text size={size === "small" ? "medium" : "large"}>
+          <Text size={size === "small" ? "medium" : "large"} color="dark-1">
             {formatAvatar(message.author!)}
           </Text>
         </Avatar>
@@ -62,7 +63,7 @@ function MessageBox({
         {content}
       </Paragraph>
       <Paragraph fill margin="none" size="small" color="dark-3">
-        {translation && translation[lang.type]}
+        {autoTranslate({ text: content, translation, lang })}
       </Paragraph>
       <Text
         size="xsmall"
