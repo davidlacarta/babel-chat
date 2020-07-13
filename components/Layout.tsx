@@ -13,7 +13,12 @@ export default function Layout({ room }: Props) {
   const { username } = useUsername();
 
   return (
-    <Grid fill rows={["xsmall", "auto"]} areas={[["header"], ["main"]]}>
+    <Grid
+      fill
+      areas={[["header"], ["main"]]}
+      rows={["xsmall", "auto"]}
+      columns={["auto"]}
+    >
       <Header justify="center" gridArea="header" background="light-2">
         <ChatHeader room={room} />
       </Header>

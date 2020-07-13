@@ -14,7 +14,12 @@ export default function Chat({ room, username }: Props) {
   const { writters, typing } = useWritters({ room, username });
 
   return (
-    <Grid fill areas={[["messages"], ["input"]]} rows={["auto", "xsmall"]}>
+    <Grid
+      fill
+      areas={[["messages"], ["input"]]}
+      rows={["auto", "xsmall"]}
+      columns={["auto"]}
+    >
       <Box align="center" gridArea="messages">
         <Messages messages={messages} writters={writters} />
       </Box>

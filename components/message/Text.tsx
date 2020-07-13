@@ -19,8 +19,9 @@ export default function TextMessage({ message, username, lang }: Props) {
   return (
     <Box style={{ minHeight: "auto" }}>
       <Grid
-        columns={isAuthor ? ["auto", "min-content"] : ["min-content", "auto"]}
         areas={isAuthor ? [["message", "avatar"]] : [["avatar", "message"]]}
+        rows={["auto"]}
+        columns={isAuthor ? ["auto", "min-content"] : ["min-content", "auto"]}
         justifyContent={isAuthor ? "end" : "start"}
         gap="small"
         margin="medium"
